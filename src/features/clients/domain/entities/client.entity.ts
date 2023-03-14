@@ -2,10 +2,21 @@ import { Wallet } from '../../../wallets/domain/entities/wallet.entity';
 import { BaseDomainEntity } from '../../../../core/entities/baseDomainEntity';
 import { Column, Entity } from 'typeorm';
 import { randomUUID } from 'crypto';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateClientCommand {
   public firstName: string;
   public lastName: string;
+}
+
+export class UpdateClientCommand {
+  public id: string;
+  @ApiProperty()
+  public firstName?: string;
+  @ApiProperty()
+  public lastName?: string;
+  @ApiProperty()
+  public address?: string;
 }
 
 @Entity()
@@ -14,6 +25,10 @@ export class Client extends BaseDomainEntity {
   public firstName: string;
   @Column()
   public lastName: string;
+  @Column({
+    nullable: true,
+  })
+  public address: string | null;
   @Column()
   public status: ClientStatus;
 
@@ -21,13 +36,29 @@ export class Client extends BaseDomainEntity {
   public wallets: Wallet[];
   public passportScan: FileInfo;
 
-  static create(dto: CreateClientCommand) {
+  static create(command: CreateClientCommand) {
     const client = new Client();
     client.id = randomUUID();
-    client.firstName = dto.firstName;
-    client.lastName = dto.lastName;
+    client.firstName = command.firstName;
+    client.lastName = command.lastName;
     client.status = ClientStatus.OnVerification;
+    client.address = null;
     return client;
+  }
+
+  update(command: UpdateClientCommand) {
+    // we not allow null and empty
+    if (command.firstName) {
+      this.firstName = command.firstName;
+    }
+    // we not allow null and empty
+    if (command.lastName) {
+      this.lastName = command.lastName;
+    }
+    // we allow null
+    if (typeof command.address !== undefined) {
+      this.address = command.address;
+    }
   }
 }
 

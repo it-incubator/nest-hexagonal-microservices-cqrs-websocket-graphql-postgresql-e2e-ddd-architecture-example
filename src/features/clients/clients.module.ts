@@ -6,11 +6,18 @@ import { Client } from './domain/entities/client.entity';
 import { ClientsQueryRepository } from './db/clients.query.repository';
 import { ClientsRepository } from './db/clients.repository';
 import { CreateClientUseCase } from './applications/use-cases/create-client.usecase';
+import { CqrsModule } from '@nestjs/cqrs';
+import { UpdateClientUseCase } from './applications/use-cases/update-client.usecase';
+import { DeleteClientUseCase } from './applications/use-cases/delete-client.usecase';
 
-const useCases = [CreateClientUseCase];
+const useCases = [
+  CreateClientUseCase,
+  UpdateClientUseCase,
+  DeleteClientUseCase,
+];
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Client])],
+  imports: [CqrsModule, TypeOrmModule.forFeature([Client])],
   controllers: [ClientsController],
   providers: [
     ClientsService,

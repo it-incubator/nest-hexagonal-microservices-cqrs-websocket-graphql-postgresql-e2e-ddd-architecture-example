@@ -24,10 +24,13 @@ export class ClientsQueryRepository {
   }
 
   static mapClientEntityToClientViewModel(client: Client): ClientViewModel {
+    if (!client) return null;
+
     return {
       id: client.id,
       firstName: client.firstName,
       lastName: client.lastName,
+      address: client.address,
     };
   }
 }
@@ -39,4 +42,6 @@ export class ClientViewModel {
   firstName: string;
   @ApiProperty()
   lastName: string;
+  @ApiProperty()
+  address: string;
 }

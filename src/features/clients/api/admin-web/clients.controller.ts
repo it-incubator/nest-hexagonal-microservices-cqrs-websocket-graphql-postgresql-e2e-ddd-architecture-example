@@ -6,14 +6,31 @@ import {
   Patch,
   Param,
   Delete,
+  Put,
+  HttpCode,
+  HttpStatus,
+  NotFoundException,
 } from '@nestjs/common';
 import { ClientsService } from '../../clients.service';
 import { ClientsQueryRepository } from '../../db/clients.query.repository';
-import { CreateClientUseCase } from '../../applications/use-cases/create-client.usecase';
-import { CreateClientCommand } from '../../domain/entities/client.entity';
+import {
+  CreateClientCommand,
+  UpdateClientCommand,
+} from '../../domain/entities/client.entity';
 import { CommandBus } from '@nestjs/cqrs';
+import { DeleteClientCommand } from '../../applications/use-cases/delete-client.usecase';
 
-@Controller('clients')
+const baseUrl = '/clients';
+
+export const endpoints = {
+  findAll: () => baseUrl,
+  findOne: (id: string) => `${baseUrl}/${id}`,
+  create: () => baseUrl,
+  updateOne: (id: string) => `${baseUrl}/${id}`,
+  deleteOne: (id: string) => `${baseUrl}/${id}`,
+};
+
+@Controller(baseUrl)
 export class ClientsController {
   constructor(
     private readonly clientsService: ClientsService,
@@ -21,30 +38,37 @@ export class ClientsController {
     private readonly commandBus: CommandBus,
   ) {}
 
-  @Post()
-  async create(@Body() createClientDto: CreateClientCommand) {
-    console.log(createClientDto);
-    const clientEntity = await this.commandBus.execute(createClientDto);
-    return this.clientsQueryRepository.getById(clientEntity.id);
-  }
-
   @Get()
   findAll() {
     return this.clientsQueryRepository.getAll();
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.clientsService.findOne(+id);
+  async findOne(@Param('id') id: string) {
+    const client = await this.clientsQueryRepository.getById(id);
+    if (!client) throw new NotFoundException();
+    return client;
   }
 
+  @Post()
+  async create(@Body() createClientCommand: CreateClientCommand) {
+    const clientEntity = await this.commandBus.execute(createClientCommand);
+    return this.clientsQueryRepository.getById(clientEntity.id);
+  }
+
+  @HttpCode(HttpStatus.NO_CONTENT)
   @Patch(':id')
-  update(@Param('id') id: string) {
-    return this.clientsService.update(+id);
+  async update(
+    @Param('id') id: string,
+    @Body() updateClientCommand: UpdateClientCommand,
+  ) {
+    updateClientCommand.id = id;
+    await this.commandBus.execute(updateClientCommand);
   }
 
+  @HttpCode(HttpStatus.NO_CONTENT)
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.clientsService.remove(+id);
+  async delete(@Param('id') id: string) {
+    await this.commandBus.execute(new DeleteClientCommand(id));
   }
 }

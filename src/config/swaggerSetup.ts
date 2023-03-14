@@ -11,3 +11,8 @@ export function swaggerSetup(app: INestApplication) {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
 }
+
+/*"compilerOptions": {
+  "deleteOutDir": true,
+      "plugins": ["@nestjs/swagger"]
+}*/

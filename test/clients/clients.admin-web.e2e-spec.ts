@@ -1,43 +1,80 @@
 import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
 import { getAppForE2ETesting } from '../../src/tests/tests.utils';
-import { CreateClientCommand } from '../../src/features/clients/domain/entities/client.entity';
+import {
+  CreateClientCommand,
+  UpdateClientCommand,
+} from '../../src/features/clients/domain/entities/client.entity';
+import { ClientsHelper } from './clientsHelper';
+import { endpoints } from '../../src/features/clients/api/admin-web/clients.controller';
 
 jest.setTimeout(100000);
 
-describe('AppController (e2e)', () => {
+describe('clients.admin-web.controller (e2e)', () => {
   let app: INestApplication;
+  let clientsHelper: ClientsHelper;
+
   beforeAll(async () => {
     app = await getAppForE2ETesting();
+    clientsHelper = new ClientsHelper(app);
   });
   afterAll(async () => {
     await app.close();
   });
 
-  it('/ (GET)', async () => {
-    await request(app.getHttpServer()).get('/clients').expect(200).expect([]);
-
-    const dto: CreateClientCommand = {
+  it('create client', async () => {
+    const command: CreateClientCommand = {
       firstName: 'dimych',
       lastName: 'kuzyuberdin',
     };
 
-    const expectedCreatedClient = {
-      id: expect.any(String),
-      ...dto,
+    const createdClient = await clientsHelper.createClient(command);
+
+    await clientsHelper.getClient(createdClient.id, {
+      expectedClient: createdClient,
+    });
+  });
+  it('update full client', async () => {
+    // create
+    const createCommand: CreateClientCommand = {
+      firstName: 'dimych',
+      lastName: 'kuzyuberdin',
     };
 
-    const { body: createdClient } = await request(app.getHttpServer())
-      .post('/clients')
-      .send(dto)
-      .expect(201);
+    const createdClient = await clientsHelper.createClient(createCommand);
 
-    expect(createdClient).toEqual(expectedCreatedClient);
+    // update
+    const updateCommand: Omit<UpdateClientCommand, 'id'> = {
+      firstName: 'dimych2',
+      lastName: 'kuzyuberdin2',
+      address: 'address2',
+    };
+    await clientsHelper.updateClient(createdClient.id, updateCommand);
 
-    const { body: allClients } = await request(app.getHttpServer())
-      .get('/clients')
-      .expect(200);
+    // particular patch update
+    const newUpdateCommand: Omit<UpdateClientCommand, 'id'> = {
+      address: null,
+    };
 
-    expect(allClients).toEqual([expectedCreatedClient]);
+    await clientsHelper.updateClient(createdClient.id, newUpdateCommand);
+  });
+
+  it('delete client', async () => {
+    const command: CreateClientCommand = {
+      firstName: 'dimych',
+      lastName: 'kuzyuberdin',
+    };
+
+    const createdClient = await clientsHelper.createClient(command);
+
+    await clientsHelper.getClient(createdClient.id);
+
+    await request(app.getHttpServer())
+      .delete(endpoints.deleteOne(createdClient.id))
+      .expect(204);
+
+    await clientsHelper.getClient(createdClient.id, {
+      expectedCode: 404,
+    });
   });
 });
