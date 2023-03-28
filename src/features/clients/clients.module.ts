@@ -9,6 +9,8 @@ import { CreateClientUseCase } from './applications/use-cases/create-client.usec
 import { CqrsModule } from '@nestjs/cqrs';
 import { UpdateClientUseCase } from './applications/use-cases/update-client.usecase';
 import { DeleteClientUseCase } from './applications/use-cases/delete-client.usecase';
+import { SecurityGovApiAdapter } from './infrastructure/security-gov-api.adapter';
+import { ClientCrudApiService } from './api/services/base-crud-api.service';
 
 const useCases = [
   CreateClientUseCase,
@@ -23,6 +25,8 @@ const useCases = [
     ClientsService,
     ClientsQueryRepository,
     ClientsRepository,
+    SecurityGovApiAdapter,
+    ClientCrudApiService,
     ...useCases,
   ],
 })

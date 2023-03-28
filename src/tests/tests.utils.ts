@@ -1,4 +1,4 @@
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, TestingModule, TestingModuleBuilder } from '@nestjs/testing';
 import { DataSource } from 'typeorm';
 import { INestApplication } from '@nestjs/common';
 import { AppModule } from '../app.module';
@@ -28,10 +28,16 @@ SELECT truncate_tables('${dbOwnerUserName}');
 `);
 }
 
-export const getAppForE2ETesting = async () => {
-  const appModule: TestingModule = await Test.createTestingModule({
+export const getAppForE2ETesting = async (
+  setupModuleBuilder: (appModuleBuilder: TestingModuleBuilder) => void,
+) => {
+  const appModuleBuilder: TestingModuleBuilder = Test.createTestingModule({
     imports: [AppModule],
-  }).compile();
+  });
+
+  setupModuleBuilder(appModuleBuilder);
+
+  const appModule = await appModuleBuilder.compile();
 
   const app = appModule.createNestApplication();
   configApp(app); // todo: , {swagger: false}

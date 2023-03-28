@@ -10,15 +10,22 @@ import {
   HttpCode,
   HttpStatus,
   NotFoundException,
+  BadRequestException,
 } from '@nestjs/common';
 import { ClientsService } from '../../clients.service';
-import { ClientsQueryRepository } from '../../db/clients.query.repository';
 import {
+  ClientsQueryRepository,
+  ClientViewModel,
+} from '../../db/clients.query.repository';
+import {
+  Client,
   CreateClientCommand,
   UpdateClientCommand,
 } from '../../domain/entities/client.entity';
 import { CommandBus } from '@nestjs/cqrs';
 import { DeleteClientCommand } from '../../applications/use-cases/delete-client.usecase';
+import { ResultNotification } from '../../../../core/validation/notification';
+import { ClientCrudApiService } from '../services/base-crud-api.service';
 
 const baseUrl = '/clients';
 
@@ -36,6 +43,7 @@ export class ClientsController {
     private readonly clientsService: ClientsService,
     private readonly clientsQueryRepository: ClientsQueryRepository,
     private readonly commandBus: CommandBus,
+    private readonly clientCrudApiService: ClientCrudApiService,
   ) {}
 
   @Get()
@@ -52,8 +60,7 @@ export class ClientsController {
 
   @Post()
   async create(@Body() createClientCommand: CreateClientCommand) {
-    const clientEntity = await this.commandBus.execute(createClientCommand);
-    return this.clientsQueryRepository.getById(clientEntity.id);
+    return this.clientCrudApiService.create(createClientCommand);
   }
 
   @HttpCode(HttpStatus.NO_CONTENT)

@@ -1,26 +1,47 @@
 import { CreateClientCommand } from '../../src/features/clients/domain/entities/client.entity';
 import * as request from 'supertest';
-import { INestApplication } from '@nestjs/common';
+import { HttpCode, HttpStatus, INestApplication } from '@nestjs/common';
 import { ClientViewModel } from '../../dist/features/clients/db/clients.query.repository';
 import { endpoints } from '../../src/features/clients/api/admin-web/clients.controller';
+import supertest from 'supertest';
+import {
+  NotificationExtension,
+  ResultNotification,
+} from '../../dist/core/validation/notification';
 
 export class ClientsHelper {
   constructor(private app: INestApplication) {}
-  async createClient(command: CreateClientCommand): Promise<ClientViewModel> {
-    const expectedCreatedClient = {
-      id: expect.any(String),
-      address: null,
-      ...command,
-    };
+  async createClient(
+    command: CreateClientCommand,
+    config: {
+      expectedBody?: any;
+      expectedCode?: number;
+    } = {},
+  ): Promise<ResultNotification<{ item: ClientViewModel }>> {
+    const expectedCode = config.expectedCode ?? HttpStatus.CREATED;
 
-    const { body: createdClient } = await request(this.app.getHttpServer())
+    const response = await request(this.app.getHttpServer())
       .post(endpoints.create())
       .send(command)
-      .expect(201);
+      .expect(expectedCode);
 
-    expect(createdClient).toEqual(expectedCreatedClient);
+    if (config.expectedCode === HttpStatus.CREATED) {
+      const expectedCreatedClient = {
+        id: expect.any(String),
+        address: null,
+        ...command,
+      };
 
-    return createdClient as ClientViewModel;
+      const {
+        body: {
+          data: { item: createdClient },
+        },
+      } = response;
+
+      expect(createdClient).toEqual(expectedCreatedClient);
+    }
+
+    return response.body;
   }
 
   async getClient(
@@ -41,20 +62,37 @@ export class ClientsHelper {
     return client;
   }
 
-  async updateClient(id: string, updateCommand: any) {
+  async updateClient(
+    id: string,
+    updateCommand: any,
+    config: {
+      expectedCode?: number;
+    } = {},
+  ) {
+    const expectedCode = config.expectedCode ?? HttpStatus.NO_CONTENT;
     // get client before update
     const clientBeforeUpdate = await this.getClient(id);
 
-    await request(this.app.getHttpServer())
+    const updateResponse: any = await request(this.app.getHttpServer())
       .patch(endpoints.updateOne(id))
       .send(updateCommand)
-      .expect(204);
+      .expect(expectedCode);
 
-    const clientAfterUpdate = await this.getClient(id);
+    if (expectedCode === HttpStatus.NO_CONTENT) {
+      const clientAfterUpdate = await this.getClient(id);
 
-    expect(clientAfterUpdate).toEqual({
-      ...clientBeforeUpdate,
-      ...updateCommand,
-    });
+      expect(clientAfterUpdate).toEqual({
+        ...clientBeforeUpdate,
+        ...updateCommand,
+      });
+    } else {
+      const clientAfterNoUpdate = await this.getClient(id);
+
+      expect(clientAfterNoUpdate).toEqual({
+        ...clientBeforeUpdate,
+      });
+    }
+
+    return updateResponse;
   }
 }

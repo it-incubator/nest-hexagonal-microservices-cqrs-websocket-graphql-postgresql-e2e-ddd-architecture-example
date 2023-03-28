@@ -4,8 +4,16 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Injectable } from '@nestjs/common';
 import { ApiProperty } from '@nestjs/swagger';
 
+export interface BaseQueryRepository<TViewModel> {
+  getAll(): Promise<TViewModel[]>;
+
+  getById(id: string): Promise<TViewModel>;
+}
+
 @Injectable()
-export class ClientsQueryRepository {
+export class ClientsQueryRepository
+  implements BaseQueryRepository<ClientViewModel>
+{
   constructor(
     @InjectRepository(Client)
     private ormRepo: Repository<Client>,
