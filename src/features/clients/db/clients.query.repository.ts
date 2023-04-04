@@ -3,12 +3,7 @@ import { Client } from '../domain/entities/client.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Injectable } from '@nestjs/common';
 import { ApiProperty } from '@nestjs/swagger';
-
-export interface BaseQueryRepository<TViewModel> {
-  getAll(): Promise<TViewModel[]>;
-
-  getById(id: string): Promise<TViewModel>;
-}
+import { BaseQueryRepository } from '../../../core/db/base.query.repository';
 
 @Injectable()
 export class ClientsQueryRepository

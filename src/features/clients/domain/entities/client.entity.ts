@@ -1,14 +1,11 @@
-import { Wallet } from '../../../wallets/domain/entities/wallet.entity';
 import { BaseDomainEntity } from '../../../../core/entities/baseDomainEntity';
 import { Column, Entity } from 'typeorm';
 import { randomUUID } from 'crypto';
 import { ApiProperty } from '@nestjs/swagger';
 import { IsOptional, IsString, Length } from 'class-validator';
-import {
-  validateEntity,
-  validateEntityOrThrow,
-} from '../../../../core/validation/validation-utils';
+import { validateEntity } from '../../../../core/validation/validation-utils';
 import { ResultNotification } from '../../../../core/validation/notification';
+import { Wallet } from '../../../wallets/domain/entities/wallet.entity';
 
 export const validationsContsts = {
   firstName: {

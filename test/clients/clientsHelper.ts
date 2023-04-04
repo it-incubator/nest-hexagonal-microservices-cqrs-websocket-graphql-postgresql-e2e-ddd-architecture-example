@@ -1,13 +1,9 @@
 import { CreateClientCommand } from '../../src/features/clients/domain/entities/client.entity';
 import * as request from 'supertest';
-import { HttpCode, HttpStatus, INestApplication } from '@nestjs/common';
+import { HttpStatus, INestApplication } from '@nestjs/common';
 import { ClientViewModel } from '../../dist/features/clients/db/clients.query.repository';
 import { endpoints } from '../../src/features/clients/api/admin-web/clients.controller';
-import supertest from 'supertest';
-import {
-  NotificationExtension,
-  ResultNotification,
-} from '../../dist/core/validation/notification';
+import { ResultNotification } from '../../dist/core/validation/notification';
 
 export class ClientsHelper {
   constructor(private app: INestApplication) {}

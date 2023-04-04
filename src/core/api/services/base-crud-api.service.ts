@@ -1,16 +1,8 @@
 import { CommandBus } from '@nestjs/cqrs';
-import { ResultNotification } from '../../../../core/validation/notification';
-import { BadRequestException, Injectable } from '@nestjs/common';
-import {
-  BaseQueryRepository,
-  ClientsQueryRepository,
-  ClientViewModel,
-} from '../../db/clients.query.repository';
-import { BaseDomainEntity } from '../../../../core/entities/baseDomainEntity';
-import {
-  Client,
-  CreateClientCommand,
-} from '../../domain/entities/client.entity';
+import { ResultNotification } from '../../validation/notification';
+import { BadRequestException } from '@nestjs/common';
+import { BaseDomainEntity } from '../../entities/baseDomainEntity';
+import { BaseQueryRepository } from '../../db/base.query.repository';
 
 export class ItemCreatedResultNotification<
   TViewModel,
@@ -46,16 +38,5 @@ export class BaseCrudApiService<
       console.log('viewModel: ', viewModel);
       return new ItemCreatedResultNotification(viewModel);
     }
-  }
-}
-
-@Injectable()
-export class ClientCrudApiService extends BaseCrudApiService<
-  Client,
-  CreateClientCommand,
-  ClientViewModel
-> {
-  constructor(commandBus: CommandBus, queryRepository: ClientsQueryRepository) {
-    super(commandBus, queryRepository);
   }
 }

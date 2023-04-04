@@ -1,14 +1,14 @@
-import { Repository } from 'typeorm';
-import { Client } from '../domain/entities/client.entity';
-import { InjectRepository } from '@nestjs/typeorm';
 import { Injectable } from '@nestjs/common';
 import { BaseRepository } from '../../../core/db/base.repository';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { Wallet } from '../domain/entities/wallet.entity';
 
 @Injectable()
-export class ClientsRepository implements BaseRepository<Client> {
+export class WalletsRepository implements BaseRepository<Wallet> {
   constructor(
-    @InjectRepository(Client)
-    private ormRepo: Repository<Client>,
+    @InjectRepository(Wallet)
+    private ormRepo: Repository<Wallet>,
   ) {}
 
   async getById(id: string) {
@@ -16,7 +16,7 @@ export class ClientsRepository implements BaseRepository<Client> {
     return entity;
   }
 
-  async save(entity: Client) {
+  async save(entity: Wallet) {
     await this.ormRepo.save(entity);
   }
 

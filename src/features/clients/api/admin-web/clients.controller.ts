@@ -1,31 +1,24 @@
 import {
-  Controller,
-  Get,
-  Post,
   Body,
-  Patch,
-  Param,
+  Controller,
   Delete,
-  Put,
+  Get,
   HttpCode,
   HttpStatus,
   NotFoundException,
-  BadRequestException,
+  Param,
+  Patch,
+  Post,
 } from '@nestjs/common';
 import { ClientsService } from '../../clients.service';
+import { ClientsQueryRepository } from '../../db/clients.query.repository';
 import {
-  ClientsQueryRepository,
-  ClientViewModel,
-} from '../../db/clients.query.repository';
-import {
-  Client,
   CreateClientCommand,
   UpdateClientCommand,
 } from '../../domain/entities/client.entity';
 import { CommandBus } from '@nestjs/cqrs';
 import { DeleteClientCommand } from '../../applications/use-cases/delete-client.usecase';
-import { ResultNotification } from '../../../../core/validation/notification';
-import { ClientCrudApiService } from '../services/base-crud-api.service';
+import { ClientCrudApiService } from './services/clients-crud-api.service';
 
 const baseUrl = '/clients';
 
