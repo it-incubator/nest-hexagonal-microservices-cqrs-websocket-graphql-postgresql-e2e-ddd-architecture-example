@@ -18,7 +18,6 @@ export class CreateClientUseCase {
     dto: CreateClientCommand,
   ): Promise<ResultNotification<Client>> {
     const notification = new ResultNotification<Client>();
-
     const isSwindler = await this.securityGovApiAdapter.isSwindler(
       dto.firstName,
       dto.lastName,
@@ -27,9 +26,16 @@ export class CreateClientUseCase {
       notification.addError('User may be swindler', null, 2);
       return notification;
     }
-    const client = await Client.create(dto);
+    const domainNotification = await Client.create(dto);
+    if (domainNotification.hasError()) {
+      return domainNotification;
+    }
+    await this.clientsRepo.save(domainNotification.data);
+    return domainNotification;
+
+    /*  const client = await Client.create(dto);
     await this.clientsRepo.save(client);
     notification.addData(client);
-    return notification;
+    return domainNotification;*/
   }
 }

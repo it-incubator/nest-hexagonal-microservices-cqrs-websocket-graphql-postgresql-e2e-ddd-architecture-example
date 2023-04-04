@@ -6,21 +6,19 @@ import {
 } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { ResultNotification } from '../core/validation/notification';
-import { ValidationPipeErrorType } from './pipesSetup';
+import {
+  DomainError,
+  mapErorsToNotification,
+} from '../core/validation/validation-utils';
 
-@Catch(Error)
+@Catch(DomainError)
 export class ErrorExceptionFilter implements ExceptionFilter {
-  catch(exception: Error, host: ArgumentsHost) {
+  catch(exception: DomainError, host: ArgumentsHost) {
     console.log('---ErrorException', exception);
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
-    if (process.env.envoirment !== `production`) {
-      response
-        .status(500)
-        .send({ error: exception.toString(), stack: exception.stack });
-    } else {
-      response.status(500).send(`some error occurred`);
-    }
+
+    response.status(400).send(exception.resultNotification);
   }
 }
 
@@ -39,10 +37,7 @@ export class ValidationExceptionFilter implements ExceptionFilter {
         response.status(status).json(resp);
         return;
       }
-      const resultNotification = new ResultNotification();
-      resp.message.forEach((item: ValidationPipeErrorType) =>
-        resultNotification.addError(item.message, item.field, 1),
-      );
+      const resultNotification = mapErorsToNotification(resp.message);
       response.status(status).json(resultNotification);
     } else {
       response.status(status).json({

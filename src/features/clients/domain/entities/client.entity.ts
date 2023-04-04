@@ -3,14 +3,12 @@ import { BaseDomainEntity } from '../../../../core/entities/baseDomainEntity';
 import { Column, Entity } from 'typeorm';
 import { randomUUID } from 'crypto';
 import { ApiProperty } from '@nestjs/swagger';
+import { IsOptional, IsString, Length } from 'class-validator';
 import {
-  IsOptional,
-  IsString,
-  Length,
-  validate,
-  validateOrReject,
-} from 'class-validator';
-import { BadRequestException } from '@nestjs/common';
+  validateEntity,
+  validateEntityOrThrow,
+} from '../../../../core/validation/validation-utils';
+import { ResultNotification } from '../../../../core/validation/notification';
 
 export const validationsContsts = {
   firstName: {
@@ -94,7 +92,9 @@ export class Client extends BaseDomainEntity {
   public wallets: Wallet[];
   public passportScan: FileInfo;
 
-  static async create(command: CreateClientCommand) {
+  static async create(
+    command: CreateClientCommand,
+  ): Promise<ResultNotification<Client>> {
     const client = new Client();
     client.id = randomUUID();
     client.firstName = command.firstName;
@@ -102,15 +102,10 @@ export class Client extends BaseDomainEntity {
     client.status = ClientStatus.OnVerification;
     client.address = null;
 
-    // try {
-    await validateOrReject(client);
-    // } catch (error) {
-    //  console.log('catch: ', error);
-    // }
-    return client;
+    return validateEntity(client);
   }
 
-  update(command: UpdateClientCommand) {
+  update(command: UpdateClientCommand): Promise<ResultNotification<Client>> {
     // we not allow null and empty
     if (command.firstName) {
       this.firstName = command.firstName;
@@ -123,6 +118,8 @@ export class Client extends BaseDomainEntity {
     if (typeof command.address !== undefined) {
       this.address = command.address;
     }
+
+    return validateEntity(this);
   }
 }
 

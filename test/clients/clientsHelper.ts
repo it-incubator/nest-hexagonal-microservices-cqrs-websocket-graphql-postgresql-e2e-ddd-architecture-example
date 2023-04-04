@@ -93,6 +93,6 @@ export class ClientsHelper {
       });
     }
 
-    return updateResponse;
+    return updateResponse.body;
   }
 }

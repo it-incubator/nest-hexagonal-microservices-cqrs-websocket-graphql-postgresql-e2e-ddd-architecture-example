@@ -3,6 +3,20 @@ import {
   INestApplication,
   ValidationPipe,
 } from '@nestjs/common';
+import { ValidationError } from 'class-validator';
+
+export const validationErrorsMapper = {
+  mapValidationErrorArrayToValidationPipeErrorTypeArray(
+    errors: ValidationError[],
+  ): ValidationPipeErrorType[] {
+    return errors.flatMap((error) =>
+      Object.entries(error.constraints).map(([key, value]) => ({
+        field: error.property,
+        message: value,
+      })),
+    );
+  },
+};
 
 export function pipesSetup(app: INestApplication) {
   app.useGlobalPipes(
@@ -11,16 +25,11 @@ export function pipesSetup(app: INestApplication) {
       transform: true,
 
       stopAtFirstError: true,
-      exceptionFactory: (errors) => {
-        const err = [];
-        errors.forEach((e) => {
-          for (const eKey in e.constraints) {
-            err.push({
-              field: e.property,
-              message: e.constraints[eKey],
-            });
-          }
-        });
+      exceptionFactory: (errors: ValidationError[]) => {
+        const err =
+          validationErrorsMapper.mapValidationErrorArrayToValidationPipeErrorTypeArray(
+            errors,
+          );
         throw new BadRequestException(err);
       },
     }),

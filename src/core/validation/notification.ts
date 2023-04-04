@@ -1,4 +1,8 @@
 export class ResultNotification<T = null> {
+  constructor(data: T | null = null) {
+    this.data = data;
+  }
+
   extensions: NotificationExtension[] = [];
   code = 0;
   data: T | null = null;

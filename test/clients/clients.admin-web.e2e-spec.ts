@@ -72,14 +72,13 @@ describe('clients.admin-web.controller (e2e)', () => {
       lastName: lastNameOfSwindler,
     };
 
-    const createdClientBody = await clientsHelper.createClient(command);
-    const {
-      data: { item: createdClient },
-    } = createdClientBody;
-
-    await clientsHelper.getClient(createdClient.id, {
-      expectedClient: createdClient,
+    const createdClientBody = await clientsHelper.createClient(command, {
+      expectedCode: 400,
     });
+    const { extensions } = createdClientBody;
+
+    expect(createdClientBody.code).toBe(2);
+    expect(extensions.length).toBe(1);
   });
   it('update full client', async () => {
     // create
@@ -98,15 +97,15 @@ describe('clients.admin-web.controller (e2e)', () => {
       lastName: 'kuzyuberdin2',
       address: '-'.repeat(validationsContsts.address.minLength - 1),
     };
-    const updateResult = await clientsHelper.updateClient(
+    const updateBody = await clientsHelper.updateClient(
       createdClient.id,
       updateCommand,
       {
         expectedCode: 400,
       },
     );
-    expect(updateResult.body.code).toBe(1);
-    expect(updateResult.body.extensions[0].key).toBe('address');
+    expect(updateBody.code).toBe(1);
+    expect(updateBody.extensions[0].key).toBe('address');
 
     // update 204 (good address length)
     updateCommand.address = 'good long address value';

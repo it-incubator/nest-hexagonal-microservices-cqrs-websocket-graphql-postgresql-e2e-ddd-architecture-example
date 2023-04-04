@@ -1,6 +1,10 @@
 import { ClientsRepository } from '../../db/clients.repository';
-import { UpdateClientCommand } from '../../domain/entities/client.entity';
+import {
+  Client,
+  UpdateClientCommand,
+} from '../../domain/entities/client.entity';
 import { CommandHandler } from '@nestjs/cqrs';
+import { ResultNotification } from '../../../../core/validation/notification';
 
 @CommandHandler(UpdateClientCommand)
 export class UpdateClientUseCase {
@@ -11,8 +15,13 @@ export class UpdateClientUseCase {
 
     if (!client) throw new Error('No client');
 
-    client.update(command);
+    const domainNotification = await client.update(command);
+    if (domainNotification.hasError()) {
+      return domainNotification;
+    }
 
     await this.clientsRepo.save(client);
+
+    return new ResultNotification<Client>();
   }
 }
