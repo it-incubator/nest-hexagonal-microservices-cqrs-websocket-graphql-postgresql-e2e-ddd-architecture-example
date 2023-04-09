@@ -28,14 +28,12 @@ export class BaseCrudApiService<
       ResultNotification<TEntity>
     >(command);
 
-    console.log('command handled: ', notification);
     if (notification.hasError()) {
       throw new BadRequestException(notification);
     } else {
       const viewModel = await this.queryRepository.getById(
         notification.data.id,
       );
-      console.log('viewModel: ', viewModel);
       return new ItemCreatedResultNotification(viewModel);
     }
   }

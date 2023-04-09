@@ -8,7 +8,7 @@ export enum MoneyTransactionType {
 }
 
 @Entity()
-export class MoneyTransaction extends BaseDomainEntity {
+export class MoneyTransfer extends BaseDomainEntity {
   @ManyToOne(() => Wallet, (wallet) => wallet.outputTransactions)
   public fromWallet: Wallet;
   @Column('uuid')

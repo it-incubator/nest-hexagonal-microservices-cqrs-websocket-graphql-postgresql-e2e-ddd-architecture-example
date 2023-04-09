@@ -1,7 +1,7 @@
 import { BaseDomainEntity } from '../../../../core/entities/baseDomainEntity';
 import { Client } from '../../../clients/domain/entities/client.entity';
 import { Column, Entity, ManyToOne, OneToMany } from 'typeorm';
-import { MoneyTransaction } from './money-transaction.entity';
+import { MoneyTransfer } from './money-transaction.entity';
 import { CurrencyType } from './currencyType';
 
 @Entity()
@@ -20,10 +20,10 @@ export class Wallet extends BaseDomainEntity {
   public balance: number;
   public limits: WalletLimits;
   public sharings: WalletSharing[];
-  @OneToMany(() => MoneyTransaction, (transaction) => transaction.toWallet)
-  public inputTransactions: MoneyTransaction[];
-  @OneToMany(() => MoneyTransaction, (transaction) => transaction.fromWallet)
-  public outputTransactions: MoneyTransaction[];
+  @OneToMany(() => MoneyTransfer, (transaction) => transaction.toWallet)
+  public inputTransactions: MoneyTransfer[];
+  @OneToMany(() => MoneyTransfer, (transaction) => transaction.fromWallet)
+  public outputTransactions: MoneyTransfer[];
 
   @OneToMany(() => Wallet, (wallet) => wallet.client)
   public wallets: Wallet[];

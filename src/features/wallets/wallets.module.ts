@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { WalletsController } from './api/client-web/wallets.controller';
 import { CqrsModule } from '@nestjs/cqrs';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { MoneyTransaction } from './domain/entities/money-transaction.entity';
+import { MoneyTransfer } from './domain/entities/money-transaction.entity';
 import { WalletsCrudApiService } from './api/client-web/services/wallets-crud-api.service';
 import { WalletsRepository } from './db/wallets.repository';
 import { WalletsQueryRepository } from './db/wallets.query.repository';
@@ -11,9 +11,10 @@ import { MoneyTransactionsRepository } from './db/money-transactions-repository.
 import { CreateWalletUseCase } from './application/use-cases/create-wallet.usecase';
 import { MakeTransactionUseCase } from './application/use-cases/make-transaction.usecase';
 import { MoneyTransactionsQueryRepository } from './db/money-transactions.query.repository';
+import { StoreService } from '../clients/store.service';
 
 @Module({
-  imports: [CqrsModule, TypeOrmModule.forFeature([Wallet, MoneyTransaction])],
+  imports: [CqrsModule, TypeOrmModule.forFeature([Wallet, MoneyTransfer])],
   controllers: [WalletsController],
   providers: [
     WalletsCrudApiService,
@@ -23,6 +24,8 @@ import { MoneyTransactionsQueryRepository } from './db/money-transactions.query.
     MoneyTransactionsRepository,
     CreateWalletUseCase,
     MakeTransactionUseCase,
+    StoreService,
+    // entityManagerProvider(),
   ],
 })
 export class WalletsModule {}

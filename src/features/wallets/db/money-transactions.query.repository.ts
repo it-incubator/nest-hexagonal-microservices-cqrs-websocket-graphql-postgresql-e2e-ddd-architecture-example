@@ -3,15 +3,15 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Injectable } from '@nestjs/common';
 import { ApiProperty } from '@nestjs/swagger';
 import { BaseQueryRepository } from '../../../core/db/base.query.repository';
-import { MoneyTransaction } from '../domain/entities/money-transaction.entity';
+import { MoneyTransfer } from '../domain/entities/money-transaction.entity';
 
 @Injectable()
 export class MoneyTransactionsQueryRepository
   implements BaseQueryRepository<MoneyTransactionsViewModel>
 {
   constructor(
-    @InjectRepository(MoneyTransaction)
-    private ormRepo: Repository<MoneyTransaction>,
+    @InjectRepository(MoneyTransfer)
+    private ormRepo: Repository<MoneyTransfer>,
   ) {}
 
   async getAll(): Promise<MoneyTransactionsViewModel[]> {
@@ -27,7 +27,7 @@ export class MoneyTransactionsQueryRepository
   }
 
   static mapEntityToViewModel(
-    entity: MoneyTransaction,
+    entity: MoneyTransfer,
   ): MoneyTransactionsViewModel {
     if (!entity) return null;
 

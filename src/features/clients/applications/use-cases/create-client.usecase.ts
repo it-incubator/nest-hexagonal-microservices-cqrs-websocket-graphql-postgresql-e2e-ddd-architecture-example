@@ -11,12 +11,17 @@ import { ResultNotification } from '../../../../core/validation/notification';
 export class CreateClientUseCase {
   constructor(
     private clientsRepo: ClientsRepository,
-    private securityGovApiAdapter: SecurityGovApiAdapter,
-  ) {}
+    private securityGovApiAdapter: SecurityGovApiAdapter, //private storeService: StoreService,
+  ) {
+    console.log('CreateClientUseCase CONSTRUCTOR');
+  }
 
   public async execute(
     dto: CreateClientCommand,
   ): Promise<ResultNotification<Client>> {
+    //console.log(this.storeService.getStore().id);
+    //this.storeService.getStore().id++;
+    //console.log(this.storeService.getStore().id);
     const notification = new ResultNotification<Client>();
     const isSwindler = await this.securityGovApiAdapter.isSwindler(
       dto.firstName,

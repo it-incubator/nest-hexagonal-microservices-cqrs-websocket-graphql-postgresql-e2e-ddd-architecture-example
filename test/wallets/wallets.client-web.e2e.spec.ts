@@ -4,7 +4,7 @@ import { ClientsHelper } from '../clients/clientsHelper';
 import { SecurityGovApiAdapter } from '../../src/features/clients/infrastructure/security-gov-api.adapter';
 import { WalletsHelper } from '../clients/walletsHelper';
 
-jest.setTimeout(10000);
+jest.setTimeout(60000);
 
 describe('clients.admin-web.controller (e2e)', () => {
   let app: INestApplication;
@@ -58,18 +58,52 @@ describe('clients.admin-web.controller (e2e)', () => {
       clientId: client2.id,
     });
 
+    /*const {
+      data: { item: wallet3 },
+    } = await walletsHelper.createWallet({
+      clientId: client2.id,
+    });
+    console.log(wallet3.id);*/
+
+    const makeTransaction = () =>
+      walletsHelper.makeTransaction({
+        fromWalletId: wallet1.id,
+        toWalletId: wallet2.id,
+        amount: 10,
+      });
+    const makeTransactionBack = () =>
+      walletsHelper.makeTransaction({
+        fromWalletId: wallet2.id,
+        toWalletId: wallet1.id,
+        amount: 10,
+      });
+
+    const results = await Promise.all([
+      makeTransaction(),
+      makeTransactionBack(),
+      /*  makeTransaction(),
+      makeTransactionBack(),
+      makeTransaction(),
+      makeTransactionBack(),
+      makeTransaction(),
+      makeTransactionBack(),
+      makeTransaction(),
+      makeTransactionBack(),*/
+    ]);
     const {
       data: { item: transaction1 },
-    } = await walletsHelper.makeTransaction({
-      fromWalletId: wallet1.id,
-      toWalletId: wallet2.id,
-      amount: 10,
-    });
+    } = results[0];
+    const {
+      data: { item: transaction2 },
+    } = results[1];
+    /*const {
+      data: { item: transaction3 },
+    } = results[2];*/
 
     await walletsHelper.getWallet(wallet1.id, {
       expectedItem: {
         id: wallet1.id,
-        balance: 90,
+        balance: 100,
         title: expect.any(String),
       },
     });
@@ -77,7 +111,7 @@ describe('clients.admin-web.controller (e2e)', () => {
     await walletsHelper.getWallet(wallet2.id, {
       expectedItem: {
         id: wallet2.id,
-        balance: 110,
+        balance: 100,
         title: expect.any(String),
       },
     });

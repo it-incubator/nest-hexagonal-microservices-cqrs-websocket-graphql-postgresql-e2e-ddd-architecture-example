@@ -42,6 +42,8 @@ describe('clients.admin-web.controller (e2e)', () => {
     };
 
     const createdClientBody = await clientsHelper.createClient(command);
+    // const createdClientBody2 = await clientsHelper.createClient(command);
+    // const createdClientBody3 = await clientsHelper.createClient(command);
 
     const {
       data: { item: createdClient },

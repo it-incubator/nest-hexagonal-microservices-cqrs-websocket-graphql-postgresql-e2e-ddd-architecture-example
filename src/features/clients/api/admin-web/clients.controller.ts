@@ -9,6 +9,7 @@ import {
   Param,
   Patch,
   Post,
+  Scope,
 } from '@nestjs/common';
 import { ClientsService } from '../../clients.service';
 import { ClientsQueryRepository } from '../../db/clients.query.repository';
@@ -30,14 +31,16 @@ export const endpoints = {
   deleteOne: (id: string) => `${baseUrl}/${id}`,
 };
 
-@Controller(baseUrl)
+@Controller({ path: baseUrl, scope: Scope.REQUEST })
 export class ClientsController {
   constructor(
     private readonly clientsService: ClientsService,
     private readonly clientsQueryRepository: ClientsQueryRepository,
     private readonly commandBus: CommandBus,
     private readonly clientCrudApiService: ClientCrudApiService,
-  ) {}
+  ) {
+    console.log('ClientsController CONSTRUCTOR');
+  }
 
   @Get()
   findAll() {
