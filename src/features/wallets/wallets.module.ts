@@ -9,9 +9,11 @@ import { WalletsQueryRepository } from './db/wallets.query.repository';
 import { Wallet } from './domain/entities/wallet.entity';
 import { MoneyTransactionsRepository } from './db/money-transactions-repository.service';
 import { CreateWalletUseCase } from './application/use-cases/create-wallet.usecase';
-import { MakeTransactionUseCase } from './application/use-cases/make-transaction.usecase';
+import { MakeMoneyTransferUseCase } from './application/use-cases/make-money-transfer-use.case';
 import { MoneyTransactionsQueryRepository } from './db/money-transactions.query.repository';
 import { StoreService } from '../clients/store.service';
+import { MoneyRemovedFromWalletBalanceEventHandler } from './application/events-handlers/notify-client-when-money-waithdrawn-from-wallet-balance.event.handler';
+import { MoneyAddedToWalletBalanceEvent } from './domain/entities/wallet/events/moneyAddedToWalletBalanceEvent';
 
 @Module({
   imports: [CqrsModule, TypeOrmModule.forFeature([Wallet, MoneyTransfer])],
@@ -23,8 +25,10 @@ import { StoreService } from '../clients/store.service';
     MoneyTransactionsQueryRepository,
     MoneyTransactionsRepository,
     CreateWalletUseCase,
-    MakeTransactionUseCase,
+    MakeMoneyTransferUseCase,
     StoreService,
+    MoneyRemovedFromWalletBalanceEventHandler,
+    MoneyAddedToWalletBalanceEvent,
     // entityManagerProvider(),
   ],
 })

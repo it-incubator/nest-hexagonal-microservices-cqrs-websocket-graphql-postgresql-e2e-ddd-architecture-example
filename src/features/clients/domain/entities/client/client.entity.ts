@@ -1,11 +1,19 @@
-import { BaseDomainEntity } from '../../../../core/entities/baseDomainEntity';
+import {
+  BaseDomainAggregateRootEntity,
+  BaseDomainEntity,
+} from '../../../../../modules/core/entities/baseDomainEntity';
 import { Column, Entity } from 'typeorm';
 import { randomUUID } from 'crypto';
 import { ApiProperty } from '@nestjs/swagger';
 import { IsOptional, IsString, Length } from 'class-validator';
-import { validateEntity } from '../../../../core/validation/validation-utils';
-import { ResultNotification } from '../../../../core/validation/notification';
-import { Wallet } from '../../../wallets/domain/entities/wallet.entity';
+import { validateEntity } from '../../../../../modules/core/validation/validation-utils';
+import {
+  DomainResultNotification,
+  ResultNotification,
+} from '../../../../../modules/core/validation/notification';
+import { Wallet } from '../../../../wallets/domain/entities/wallet.entity';
+import { ClientUpdatedEvent } from './events/client-updated.event';
+import { ClientCreatedEvent } from './events/client-created.event';
 
 export const validationsContsts = {
   firstName: {
@@ -65,7 +73,7 @@ export class UpdateClientCommand {
 }
 
 @Entity()
-export class Client extends BaseDomainEntity {
+export class Client extends BaseDomainAggregateRootEntity {
   @Column()
   @Length(
     validationsContsts.firstName.minLength,
@@ -91,7 +99,7 @@ export class Client extends BaseDomainEntity {
 
   static async create(
     command: CreateClientCommand,
-  ): Promise<ResultNotification<Client>> {
+  ): Promise<DomainResultNotification<Client>> {
     const client = new Client();
     client.id = randomUUID();
     client.firstName = command.firstName;
@@ -99,7 +107,14 @@ export class Client extends BaseDomainEntity {
     client.status = ClientStatus.OnVerification;
     client.address = null;
 
-    return validateEntity(client);
+    const clientCreatedEvent = new ClientCreatedEvent(
+      client.id,
+      client.firstName,
+      client.lastName,
+      client.status,
+      client.address,
+    );
+    return validateEntity(client, [clientCreatedEvent]);
   }
 
   update(command: UpdateClientCommand): Promise<ResultNotification<Client>> {
@@ -116,11 +131,13 @@ export class Client extends BaseDomainEntity {
       this.address = command.address;
     }
 
-    return validateEntity(this);
+    const updateEvent = new ClientUpdatedEvent(this.id, command);
+
+    return validateEntity(this, [updateEvent]);
   }
 }
 
-enum ClientStatus {
+export enum ClientStatus {
   New = 0,
   OnVerification = 1,
   Active = 2,

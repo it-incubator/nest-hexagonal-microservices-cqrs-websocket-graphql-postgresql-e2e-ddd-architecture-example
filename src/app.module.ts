@@ -5,6 +5,7 @@ import { ClientsModule } from './features/clients/clients.module';
 import { WalletsModule } from './features/wallets/wallets.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AsyncStorageMiddleware } from './config/middlewareSetup';
+import { CoreModule } from './modules/core/core.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { AsyncStorageMiddleware } from './config/middlewareSetup';
       synchronize: true,
       logging: ['error'],
     }),
+    CoreModule,
   ],
   controllers: [AppController],
   providers: [AppService],

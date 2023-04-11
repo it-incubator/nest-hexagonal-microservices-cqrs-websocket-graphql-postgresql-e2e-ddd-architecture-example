@@ -1,5 +1,5 @@
 import { CommandHandler } from '@nestjs/cqrs';
-import { ResultNotification } from '../../../../core/validation/notification';
+import { ResultNotification } from '../../../../modules/core/validation/notification';
 import { IsString } from 'class-validator';
 import { WalletsRepository } from '../../db/wallets.repository';
 import { Wallet } from '../../domain/entities/wallet.entity';

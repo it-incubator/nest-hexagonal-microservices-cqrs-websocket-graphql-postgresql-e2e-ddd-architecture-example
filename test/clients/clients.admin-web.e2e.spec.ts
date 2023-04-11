@@ -5,10 +5,11 @@ import {
   CreateClientCommand,
   UpdateClientCommand,
   validationsContsts,
-} from '../../src/features/clients/domain/entities/client.entity';
+} from '../../src/features/clients/domain/entities/client/client.entity';
 import { ClientsHelper } from './clientsHelper';
 import { endpoints } from '../../src/features/clients/api/admin-web/clients.controller';
 import { SecurityGovApiAdapter } from '../../src/features/clients/infrastructure/security-gov-api.adapter';
+import { SmtpAdapter } from '../../src/modules/core/infrastructure/smtp.adapter';
 
 jest.setTimeout(10000);
 
@@ -22,11 +23,19 @@ describe('clients.admin-web.controller (e2e)', () => {
     isSwindler: async (firstName, lastName) => lastName === lastNameOfSwindler,
   };
 
+  const smtpAdapterMock: SmtpAdapter = {
+    send: jest.fn(async (to, subject, body) => {
+      return Promise.resolve();
+    }),
+  };
+
   beforeAll(async () => {
     app = await getAppForE2ETesting((module) => {
       module
         .overrideProvider(SecurityGovApiAdapter)
         .useValue(securityGovApiAdapterMock);
+
+      module.overrideProvider(SmtpAdapter).useValue(smtpAdapterMock);
     });
 
     clientsHelper = new ClientsHelper(app);
@@ -119,6 +128,10 @@ describe('clients.admin-web.controller (e2e)', () => {
     };
 
     await clientsHelper.updateClient(createdClient.id, newUpdateCommand);
+
+    // await new Promise((res) => setTimeout(res, 1000));
+
+    expect(smtpAdapterMock.send).toBeCalledTimes(2);
   });
 
   it('delete client', async () => {

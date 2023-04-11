@@ -2,16 +2,19 @@ import { ClientsRepository } from '../../db/clients.repository';
 import {
   Client,
   UpdateClientCommand,
-} from '../../domain/entities/client.entity';
-import { CommandHandler } from '@nestjs/cqrs';
-import { ResultNotification } from '../../../../core/validation/notification';
+} from '../../domain/entities/client/client.entity';
+import { CommandHandler, EventBus } from '@nestjs/cqrs';
+import { ResultNotification } from '../../../../modules/core/validation/notification';
 
 @CommandHandler(UpdateClientCommand)
 export class UpdateClientUseCase {
-  constructor(private clientsRepo: ClientsRepository) {}
+  constructor(
+    private clientsRepo: ClientsRepository,
+    private eventBus: EventBus,
+  ) {}
 
   public async execute(command: UpdateClientCommand) {
-    const client = await this.clientsRepo.getById(command.id);
+    const client: Client = await this.clientsRepo.getById(command.id);
 
     if (!client) throw new Error('No client');
 

@@ -1,9 +1,9 @@
-import { ResultNotification } from './notification';
+import { DomainResultNotification, ResultNotification } from './notification';
 import { validateOrReject } from 'class-validator';
 import {
   validationErrorsMapper,
   ValidationPipeErrorType,
-} from '../../config/pipesSetup';
+} from '../../../config/pipesSetup';
 
 export class DomainError extends Error {
   constructor(message: string, public resultNotification: ResultNotification) {
@@ -27,22 +27,24 @@ export const validateEntityOrThrow = async (entity: any) => {
 
 export const validateEntity = async <T extends object>(
   entity: T,
-): Promise<ResultNotification<T>> => {
+  events: any,
+): Promise<DomainResultNotification<T>> => {
   try {
     await validateOrReject(entity);
   } catch (errors) {
-    const resultNotification: ResultNotification = mapErorsToNotification(
+    const resultNotification: DomainResultNotification = mapErorsToNotification(
       validationErrorsMapper.mapValidationErrorArrayToValidationPipeErrorTypeArray(
         errors,
       ),
     );
+    resultNotification.addEvents(events);
     return resultNotification;
   }
-  return new ResultNotification<T>(entity);
+  return new DomainResultNotification<T>(entity);
 };
 
 export function mapErorsToNotification(errors: ValidationPipeErrorType[]) {
-  const resultNotification = new ResultNotification();
+  const resultNotification = new DomainResultNotification();
   errors.forEach((item: ValidationPipeErrorType) =>
     resultNotification.addError(item.message, item.field, 1),
   );

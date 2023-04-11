@@ -5,16 +5,15 @@ import {
   HttpException,
 } from '@nestjs/common';
 import { Request, Response } from 'express';
-import { ResultNotification } from '../core/validation/notification';
+import { ResultNotification } from '../modules/core/validation/notification';
 import {
   DomainError,
   mapErorsToNotification,
-} from '../core/validation/validation-utils';
+} from '../modules/core/validation/validation-utils';
 
 @Catch(DomainError)
 export class ErrorExceptionFilter implements ExceptionFilter {
   catch(exception: DomainError, host: ArgumentsHost) {
-    console.log('---ErrorException', exception);
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
 
@@ -25,7 +24,6 @@ export class ErrorExceptionFilter implements ExceptionFilter {
 @Catch(HttpException)
 export class ValidationExceptionFilter implements ExceptionFilter {
   catch(exception: HttpException, host: ArgumentsHost) {
-    console.log('---HttpException', exception);
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
     const request = ctx.getRequest<Request>();

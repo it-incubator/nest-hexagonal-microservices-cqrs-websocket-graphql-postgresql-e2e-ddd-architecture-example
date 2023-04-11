@@ -1,4 +1,4 @@
-import { CreateClientCommand } from '../../src/features/clients/domain/entities/client.entity';
+import { CreateClientCommand } from '../../src/features/clients/domain/entities/client/client.entity';
 import * as request from 'supertest';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { ClientViewModel } from '../../dist/features/clients/db/clients.query.repository';

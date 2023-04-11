@@ -2,7 +2,7 @@ import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Injectable } from '@nestjs/common';
 import { ApiProperty } from '@nestjs/swagger';
-import { BaseQueryRepository } from '../../../core/db/base.query.repository';
+import { BaseQueryRepository } from '../../../modules/core/db/base.query.repository';
 import { MoneyTransfer } from '../domain/entities/money-transaction.entity';
 
 @Injectable()

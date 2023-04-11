@@ -1,4 +1,4 @@
-import { BaseDomainEntity } from '../../../../core/entities/baseDomainEntity';
+import { BaseDomainEntity } from '../../../../modules/core/entities/baseDomainEntity';
 import { Column, Entity, ManyToOne } from 'typeorm';
 import { Wallet } from './wallet.entity';
 

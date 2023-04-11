@@ -1,6 +1,6 @@
-import { Client } from '../domain/entities/client.entity';
+import { Client } from '../domain/entities/client/client.entity';
 import { Injectable } from '@nestjs/common';
-import { BaseRepository } from '../../../core/db/base.repository';
+import { BaseRepository } from '../../../modules/core/db/base.repository';
 import { StoreService } from '../store.service';
 
 @Injectable()

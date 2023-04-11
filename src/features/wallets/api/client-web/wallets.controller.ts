@@ -1,10 +1,10 @@
 import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
-import { MakeTransactionCommand } from '../../application/use-cases/make-transaction.usecase';
+import { MakemoneyTransferCommand } from '../../application/use-cases/make-money-transfer-use.case';
 import { WalletsCrudApiService } from './services/wallets-crud-api.service';
 import { CreateWalletCommand } from '../../application/use-cases/create-wallet.usecase';
 import { WalletsQueryRepository } from '../../db/wallets.query.repository';
-import { ItemCreatedResultNotification } from '../../../../core/api/services/base-crud-api.service';
+import { ItemCreatedResultNotification } from '../../../../modules/core/api/services/base-crud-api.service';
 import { MoneyTransactionsQueryRepository } from '../../db/money-transactions.query.repository';
 
 const baseUrl = '/wallets';
@@ -33,7 +33,7 @@ export class WalletsController {
   }
 
   @Post('transaction')
-  async makeTransaction(@Body() command: MakeTransactionCommand) {
+  async makeTransaction(@Body() command: MakemoneyTransferCommand) {
     const notification = await this.commandBus.execute(command);
     const viewModel = this.moneyTransactionsQueryRepository.getById(
       notification.data.id,

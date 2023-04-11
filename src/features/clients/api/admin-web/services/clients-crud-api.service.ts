@@ -1,11 +1,11 @@
 import { CommandBus } from '@nestjs/cqrs';
 import { Injectable } from '@nestjs/common';
 
-import { BaseCrudApiService } from '../../../../../core/api/services/base-crud-api.service';
+import { BaseCrudApiService } from '../../../../../modules/core/api/services/base-crud-api.service';
 import {
   Client,
   CreateClientCommand,
-} from '../../../domain/entities/client.entity';
+} from '../../../domain/entities/client/client.entity';
 import {
   ClientsQueryRepository,
   ClientViewModel,

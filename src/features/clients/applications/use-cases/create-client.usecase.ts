@@ -2,27 +2,34 @@ import { ClientsRepository } from '../../db/clients.repository';
 import {
   Client,
   CreateClientCommand,
-} from '../../domain/entities/client.entity';
-import { CommandHandler } from '@nestjs/cqrs';
+} from '../../domain/entities/client/client.entity';
+import { CommandHandler, EventBus } from '@nestjs/cqrs';
 import { SecurityGovApiAdapter } from '../../infrastructure/security-gov-api.adapter';
-import { ResultNotification } from '../../../../core/validation/notification';
+import { DomainResultNotification } from '../../../../modules/core/validation/notification';
+import { BaseUsecase } from '../../../../modules/core/app/baseUsecase';
+import { StoreService } from '../../store.service';
 
 @CommandHandler(CreateClientCommand)
-export class CreateClientUseCase {
+export class CreateClientUseCase extends BaseUsecase<
+  CreateClientCommand,
+  Client
+> {
   constructor(
     private clientsRepo: ClientsRepository,
+    private storeService: StoreService,
+    eventBus: EventBus,
     private securityGovApiAdapter: SecurityGovApiAdapter, //private storeService: StoreService,
   ) {
-    console.log('CreateClientUseCase CONSTRUCTOR');
+    super(storeService, eventBus);
   }
 
-  public async execute(
+  protected async onExecute(
     dto: CreateClientCommand,
-  ): Promise<ResultNotification<Client>> {
+  ): Promise<DomainResultNotification<Client>> {
     //console.log(this.storeService.getStore().id);
     //this.storeService.getStore().id++;
     //console.log(this.storeService.getStore().id);
-    const notification = new ResultNotification<Client>();
+    const notification = new DomainResultNotification<Client>();
     const isSwindler = await this.securityGovApiAdapter.isSwindler(
       dto.firstName,
       dto.lastName,
@@ -32,10 +39,11 @@ export class CreateClientUseCase {
       return notification;
     }
     const domainNotification = await Client.create(dto);
-    if (domainNotification.hasError()) {
-      return domainNotification;
-    }
+    // if (domainNotification.hasError()) {
+    //   return domainNotification;
+    // }
     await this.clientsRepo.save(domainNotification.data);
+
     return domainNotification;
 
     /*  const client = await Client.create(dto);

@@ -1,5 +1,5 @@
 import { BaseDomainEntity } from '../entities/baseDomainEntity';
-import { StoreService } from '../../features/clients/store.service';
+import { StoreService } from '../../../features/clients/store.service';
 
 /*export interface BaseRepository<T> {
   getById(id: string): Promise<T>;

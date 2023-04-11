@@ -22,5 +22,7 @@ export class AsyncStorageMiddleware implements NestMiddleware {
     );
   }
 
-  constructor(private dataSource: DataSource) {}
+  constructor(private dataSource: DataSource) {
+    //dataSource.entityMetadatas.forEach(e => e.)
+  }
 }

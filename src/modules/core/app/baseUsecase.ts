@@ -1,42 +1,29 @@
-import { DataSource } from 'typeorm';
-import { StoreService } from '../../features/clients/store.service';
+import { StoreService } from '../../../features/clients/store.service';
+import { EventBus } from '@nestjs/cqrs';
+import { DomainResultNotification } from '../validation/notification';
 
 export abstract class BaseUsecase<TInputCommand, TOutputResult> {
-  protected constructor(private readonly store: StoreService) {}
+  protected constructor(
+    private readonly store: StoreService,
+    protected eventBus: EventBus,
+  ) {}
 
   // this function will contain all of the operations that you need to perform
   // and has to be implemented in all transaction classes
-  protected abstract onExecute(command: TInputCommand): Promise<TOutputResult>;
+  protected abstract onExecute(
+    command: TInputCommand,
+  ): Promise<DomainResultNotification<TOutputResult>>;
 
-  /*
-  protected setManager(
-    manager: EntityManagerWrapper,
-    ...repos: BaseRepository<BaseDomainEntity>[]
-  ) {
-    repos.forEach((r) => r.setManager(manager));
-  }
-*/
-
-  async truncateDBTables(connection: DataSource): Promise<void> {
-    const entities = connection.entityMetadatas;
-    for (const entity of entities) {
-      const repository = connection.getRepository(entity.name);
-      await repository.query(`TRUNCATE TABLE "${entity.tableName}" CASCADE;`);
-    }
-  }
-
-  async execute(command: TInputCommand): Promise<TOutputResult> {
+  async execute(
+    command: TInputCommand,
+  ): Promise<DomainResultNotification<TOutputResult>> {
     return await this.runWithTransaction(command);
   }
-
-  /* private createRunner(): QueryRunner {
-    return this.wrapper.dataSource.createQueryRunner();
-  }*/
 
   // this is the providers function that runs the transaction
   private async runWithTransaction(
     data: TInputCommand,
-  ): Promise<TOutputResult> {
+  ): Promise<DomainResultNotification<TOutputResult>> {
     // since everything in Nest.js is a singleton we should create a separate
     // QueryRunner instance for each call
     const queryRunner = this.store.getStore().managerWrapper.queryRunner;
@@ -45,7 +32,12 @@ export abstract class BaseUsecase<TInputCommand, TOutputResult> {
 
     try {
       const result = await this.onExecute(data);
-      await queryRunner.commitTransaction();
+      if (result.hasError()) {
+        await queryRunner.rollbackTransaction();
+      } else {
+        await queryRunner.commitTransaction();
+        result.events.forEach((e) => this.eventBus.publish(e));
+      }
       return result;
     } catch (error) {
       await queryRunner.rollbackTransaction();

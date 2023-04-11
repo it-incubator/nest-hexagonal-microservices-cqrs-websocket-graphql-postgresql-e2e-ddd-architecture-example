@@ -16,7 +16,7 @@ import { ClientsQueryRepository } from '../../db/clients.query.repository';
 import {
   CreateClientCommand,
   UpdateClientCommand,
-} from '../../domain/entities/client.entity';
+} from '../../domain/entities/client/client.entity';
 import { CommandBus } from '@nestjs/cqrs';
 import { DeleteClientCommand } from '../../applications/use-cases/delete-client.usecase';
 import { ClientCrudApiService } from './services/clients-crud-api.service';
@@ -38,9 +38,7 @@ export class ClientsController {
     private readonly clientsQueryRepository: ClientsQueryRepository,
     private readonly commandBus: CommandBus,
     private readonly clientCrudApiService: ClientCrudApiService,
-  ) {
-    console.log('ClientsController CONSTRUCTOR');
-  }
+  ) {}
 
   @Get()
   findAll() {
