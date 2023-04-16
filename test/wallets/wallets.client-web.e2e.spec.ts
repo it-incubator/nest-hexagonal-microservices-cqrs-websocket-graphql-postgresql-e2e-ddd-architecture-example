@@ -125,7 +125,7 @@ describe('clients.admin-web.controller (e2e)', () => {
     });
   });
 
-  it.only('make transaction', async () => {
+  it('make transaction', async () => {
     const {
       data: { item: client1 },
     } = await clientsHelper.createClient({
