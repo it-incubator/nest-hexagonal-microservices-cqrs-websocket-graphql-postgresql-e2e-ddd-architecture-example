@@ -29,7 +29,6 @@ export class BaseRepository<T extends BaseDomainEntity> {
   }
 
   async save(entity: T) {
-    console.log(entity);
     await this.getRepository().save(entity);
   }
 
