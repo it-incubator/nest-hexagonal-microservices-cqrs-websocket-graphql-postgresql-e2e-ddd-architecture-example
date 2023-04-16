@@ -38,6 +38,10 @@ export class CreateClientCommand {
   //   validationsContsts.firstName.maxLength,
   // )
   @IsString()
+  @Length(
+    validationsContsts.firstName.minLength,
+    validationsContsts.firstName.maxLength,
+  )
   public firstName: string;
   @ApiProperty()
   @Length(
@@ -114,6 +118,8 @@ export class Client extends BaseDomainAggregateRootEntity {
       client.status,
       client.address,
     );
+
+    console.log(clientCreatedEvent);
     return validateEntity(client, [clientCreatedEvent]);
   }
 
