@@ -13,7 +13,6 @@ export class SendEmailToManagerWhenClientUpdatedEventHandler
   ) {}
 
   async handle(event: ClientUpdatedEvent) {
-    console.log(event);
     const client = await this.clientsRepo.getById(event.clientId);
     await this.smtp.send(
       'client.email',

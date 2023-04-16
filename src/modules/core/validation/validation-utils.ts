@@ -32,7 +32,6 @@ export const validateEntity = async <T extends object>(
   try {
     await validateOrReject(entity);
   } catch (errors) {
-    console.log(errors);
     const resultNotification: DomainResultNotification = mapErorsToNotification(
       validationErrorsMapper.mapValidationErrorArrayToValidationPipeErrorTypeArray(
         errors,
@@ -41,6 +40,7 @@ export const validateEntity = async <T extends object>(
     resultNotification.addEvents(events);
     return resultNotification;
   }
+  console.log(entity, 'entityt');
   return new DomainResultNotification<T>(entity);
 };
 

@@ -4,7 +4,7 @@ import {
   UpdateClientCommand,
 } from '../../domain/entities/client/client.entity';
 import { CommandHandler, EventBus } from '@nestjs/cqrs';
-import { ResultNotification } from '../../../../modules/core/validation/notification';
+import { ClientUpdatedEvent } from '../../domain/entities/client/events/client-updated.event';
 
 @CommandHandler(UpdateClientCommand)
 export class UpdateClientUseCase {
@@ -25,6 +25,8 @@ export class UpdateClientUseCase {
 
     await this.clientsRepo.save(client);
 
-    return new ResultNotification<Client>();
+    this.eventBus.publish(new ClientUpdatedEvent(client.id, command));
+
+    return domainNotification;
   }
 }

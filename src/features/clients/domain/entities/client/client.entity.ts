@@ -123,7 +123,9 @@ export class Client extends BaseDomainAggregateRootEntity {
     return validateEntity(client, [clientCreatedEvent]);
   }
 
-  update(command: UpdateClientCommand): Promise<ResultNotification<Client>> {
+  update(
+    command: UpdateClientCommand,
+  ): Promise<DomainResultNotification<Client>> {
     // we not allow null and empty
     if (command.firstName) {
       this.firstName = command.firstName;
