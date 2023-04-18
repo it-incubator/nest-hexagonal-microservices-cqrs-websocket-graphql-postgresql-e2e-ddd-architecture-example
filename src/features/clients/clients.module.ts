@@ -14,6 +14,7 @@ import { ClientCrudApiService } from './api/admin-web/services/clients-crud-api.
 // import { entityManagerProvider } from '../../core/app/initEntityManagerWrapper';
 import { StoreService } from './store.service';
 import { SendEmailToManagerWhenClientUpdatedEventHandler } from './applications/events-handlers/send-email-to-manager-when-client-updated.event.handler';
+import { WalletsModule } from '../wallets/wallets.module';
 
 const useCases = [
   CreateClientUseCase,
@@ -24,7 +25,7 @@ const useCases = [
 const eventHandlers = [SendEmailToManagerWhenClientUpdatedEventHandler];
 
 @Module({
-  imports: [CqrsModule, TypeOrmModule.forFeature([Client])],
+  imports: [CqrsModule, TypeOrmModule.forFeature([Client]), WalletsModule],
   controllers: [ClientsController],
   providers: [
     ClientsService,

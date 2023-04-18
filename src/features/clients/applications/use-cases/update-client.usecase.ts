@@ -4,27 +4,34 @@ import {
   UpdateClientCommand,
 } from '../../domain/entities/client/client.entity';
 import { CommandHandler, EventBus } from '@nestjs/cqrs';
-import { ResultNotification } from '../../../../modules/core/validation/notification';
+import { DomainResultNotification } from '../../../../modules/core/validation/notification';
+import { BaseUsecase } from '../../../../modules/core/app/baseUsecase';
+import { StoreService } from '../../store.service';
 
 @CommandHandler(UpdateClientCommand)
-export class UpdateClientUseCase {
+export class UpdateClientUseCase extends BaseUsecase<
+  UpdateClientCommand,
+  Client
+> {
   constructor(
     private clientsRepo: ClientsRepository,
-    private eventBus: EventBus,
-  ) {}
+    eventBus: EventBus,
+    storeService: StoreService,
+  ) {
+    super(storeService, eventBus);
+  }
 
-  public async execute(command: UpdateClientCommand) {
+  protected async onExecute(
+    command: UpdateClientCommand,
+  ): Promise<DomainResultNotification<Client>> {
     const client: Client = await this.clientsRepo.getById(command.id);
 
     if (!client) throw new Error('No client');
 
     const domainNotification = await client.update(command);
-    if (domainNotification.hasError()) {
-      return domainNotification;
-    }
 
     await this.clientsRepo.save(client);
 
-    return new ResultNotification<Client>();
+    return domainNotification;
   }
 }

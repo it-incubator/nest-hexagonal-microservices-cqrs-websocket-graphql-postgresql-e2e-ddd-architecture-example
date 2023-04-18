@@ -45,7 +45,9 @@ export class DomainResultNotification<
   ) {
     const domainResultNotification = new DomainResultNotification<T>();
 
-    domainResultNotification.addData(mainNotification.data);
+    if (!!mainNotification.data) {
+      domainResultNotification.addData(mainNotification.data);
+    }
     domainResultNotification.events = mainNotification.events;
 
     mainNotification.extensions.forEach((e) => {

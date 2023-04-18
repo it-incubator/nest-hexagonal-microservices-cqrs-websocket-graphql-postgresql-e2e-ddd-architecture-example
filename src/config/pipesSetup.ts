@@ -9,12 +9,13 @@ export const validationErrorsMapper = {
   mapValidationErrorArrayToValidationPipeErrorTypeArray(
     errors: ValidationError[],
   ): ValidationPipeErrorType[] {
-    return errors.flatMap((error) =>
-      Object.entries(error.constraints).map(([key, value]) => ({
+    return errors.flatMap((error) => {
+      const constraints = error.constraints ?? [];
+      return Object.entries(constraints).map(([key, value]) => ({
         field: error.property,
         message: value,
-      })),
-    );
+      }));
+    });
   },
 };
 

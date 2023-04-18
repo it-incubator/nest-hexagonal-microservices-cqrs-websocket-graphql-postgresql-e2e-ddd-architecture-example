@@ -1,10 +1,10 @@
-import { CommandHandler } from '@nestjs/cqrs';
-import { ResultNotification } from '../../../../modules/core/validation/notification';
+import { CommandHandler, EventBus } from '@nestjs/cqrs';
+import { DomainResultNotification } from '../../../../modules/core/validation/notification';
 import { IsString } from 'class-validator';
 import { WalletsRepository } from '../../db/wallets.repository';
 import { Wallet } from '../../domain/entities/wallet.entity';
-import { CurrencyType } from '../../domain/entities/currencyType';
-import { randomUUID } from 'crypto';
+import { BaseUsecase } from '../../../../modules/core/app/baseUsecase';
+import { StoreService } from '../../../clients/store.service';
 
 export class CreateWalletCommand {
   @IsString()
@@ -12,29 +12,23 @@ export class CreateWalletCommand {
 }
 
 @CommandHandler(CreateWalletCommand)
-export class CreateWalletUseCase {
-  constructor(private walletsRepository: WalletsRepository) {}
+export class CreateWalletUseCase extends BaseUsecase<
+  CreateWalletCommand,
+  Wallet
+> {
+  constructor(
+    private walletsRepository: WalletsRepository,
+    eventBus: EventBus,
+    storeService: StoreService,
+  ) {
+    super(storeService, eventBus);
+  }
 
-  public async execute(
+  protected async onExecute(
     command: CreateWalletCommand,
-  ): Promise<ResultNotification<Wallet>> {
-    const notification = new ResultNotification<Wallet>();
-
-    const wallet = new Wallet();
-    wallet.id = randomUUID();
-    wallet.title = 'USD';
-    wallet.currency = CurrencyType.USD;
-    wallet.balance = 100;
-    wallet.clientId = command.clientId;
-    wallet.cardNumber = 'sdsdsdsdsd';
-
-    await this.walletsRepository.save(wallet);
-    notification.addData(wallet);
+  ): Promise<DomainResultNotification<Wallet>> {
+    const notification = await Wallet.create(command);
+    await this.walletsRepository.save(notification.data!);
     return notification;
-
-    /*  const client = await Client.create(dto);
-    await this.clientsRepo.save(client);
-    notification.addData(client);
-    return domainNotification;*/
   }
 }

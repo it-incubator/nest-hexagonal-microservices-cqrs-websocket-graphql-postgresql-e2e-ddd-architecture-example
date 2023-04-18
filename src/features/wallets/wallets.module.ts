@@ -31,5 +31,6 @@ import { MoneyAddedToWalletBalanceEvent } from './domain/entities/wallet/events/
     MoneyAddedToWalletBalanceEvent,
     // entityManagerProvider(),
   ],
+  exports: [WalletsRepository],
 })
 export class WalletsModule {}

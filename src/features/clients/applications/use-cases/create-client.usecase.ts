@@ -26,9 +26,6 @@ export class CreateClientUseCase extends BaseUsecase<
   protected async onExecute(
     dto: CreateClientCommand,
   ): Promise<DomainResultNotification<Client>> {
-    //console.log(this.storeService.getStore().id);
-    //this.storeService.getStore().id++;
-    //console.log(this.storeService.getStore().id);
     const notification = new DomainResultNotification<Client>();
     const isSwindler = await this.securityGovApiAdapter.isSwindler(
       dto.firstName,
@@ -39,16 +36,8 @@ export class CreateClientUseCase extends BaseUsecase<
       return notification;
     }
     const domainNotification = await Client.create(dto);
-    // if (domainNotification.hasError()) {
-    //   return domainNotification;
-    // }
-    await this.clientsRepo.save(domainNotification.data);
+    await this.clientsRepo.save(domainNotification.data!);
 
     return domainNotification;
-
-    /*  const client = await Client.create(dto);
-    await this.clientsRepo.save(client);
-    notification.addData(client);
-    return domainNotification;*/
   }
 }

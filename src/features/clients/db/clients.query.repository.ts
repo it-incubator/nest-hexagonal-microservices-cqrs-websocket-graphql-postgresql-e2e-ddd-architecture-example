@@ -19,16 +19,16 @@ export class ClientsQueryRepository
     return clients.map(ClientsQueryRepository.mapClientEntityToClientViewModel);
   }
 
-  async getById(id: string): Promise<ClientViewModel> {
+  async getById(id: string): Promise<ClientViewModel | null> {
     const entity = await this.ormRepo.findOneBy({
       id: id,
     });
-    return ClientsQueryRepository.mapClientEntityToClientViewModel(entity);
+    return !!entity
+      ? ClientsQueryRepository.mapClientEntityToClientViewModel(entity)
+      : null;
   }
 
   static mapClientEntityToClientViewModel(client: Client): ClientViewModel {
-    if (!client) return null;
-
     return {
       id: client.id,
       firstName: client.firstName,
@@ -46,5 +46,5 @@ export class ClientViewModel {
   @ApiProperty()
   lastName: string;
   @ApiProperty()
-  address: string;
+  address: string | null;
 }

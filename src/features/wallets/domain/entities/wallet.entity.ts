@@ -6,6 +6,10 @@ import { CurrencyType } from './currencyType';
 import { DomainResultNotification } from '../../../../modules/core/validation/notification';
 import { MoneyRemovedFromWalletBalanceEvent } from './wallet/events/moneyRemovedFromWalletBalanceEvent';
 import { MoneyAddedToWalletBalanceEvent } from './wallet/events/moneyAddedToWalletBalanceEvent';
+import { CreateWalletCommand } from '../../application/use-cases/create-wallet.usecase';
+import { randomUUID } from 'crypto';
+import { validateEntity } from '../../../../modules/core/validation/validation-utils';
+import { WalletCreatedEvent } from './wallet/events/wallet-created.event';
 
 @Entity()
 export class Wallet extends BaseDomainEntity {
@@ -31,6 +35,20 @@ export class Wallet extends BaseDomainEntity {
   @OneToMany(() => Wallet, (wallet) => wallet.client)
   public wallets: Wallet[];
 
+  public static create(command: CreateWalletCommand) {
+    const wallet = new Wallet();
+    wallet.id = randomUUID();
+    wallet.title = 'USD';
+    wallet.currency = CurrencyType.USD;
+    wallet.balance = 100;
+    wallet.clientId = command.clientId;
+    wallet.cardNumber = 'sdsdsdsdsd';
+
+    const createEvent = new WalletCreatedEvent(wallet);
+
+    return validateEntity(wallet, [createEvent]);
+  }
+
   public withdraw(amount: number): DomainResultNotification {
     const notification = new DomainResultNotification();
     if (this.balance < amount) {
@@ -42,6 +60,7 @@ export class Wallet extends BaseDomainEntity {
     notification.addEvents(
       new MoneyRemovedFromWalletBalanceEvent(this.id, amount),
     );
+    return notification;
   }
 
   public add(amount: number): DomainResultNotification {

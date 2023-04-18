@@ -19,13 +19,28 @@ export class BaseRepository<T extends BaseDomainEntity> {
     // this.ormRepo = managerWrapper.getRepository<T>(_class);
   }
 
-  async getById(id: string, options: { lock: boolean } = { lock: false }) {
-    let selectQueryBuilder = this.getRepository().createQueryBuilder('user');
+  async getById(id: string, options: { lock: boolean } = { lock: true }) {
+    if (!id) {
+      throw new Error('Repository Error: id should be defined for getById');
+    }
+    let selectQueryBuilder = this.getRepository().createQueryBuilder();
     if (options.lock) {
       selectQueryBuilder = selectQueryBuilder.setLock('pessimistic_write');
     }
-    const entity = await selectQueryBuilder.where({ id: id }).getOne();
+    const entity = await selectQueryBuilder.where({ id: id }).getOneOrFail();
     return entity;
+  }
+
+  async getMany(
+    filter: Partial<T>,
+    options: { lock: boolean } = { lock: false },
+  ) {
+    let selectQueryBuilder = this.getRepository().createQueryBuilder();
+    if (options.lock) {
+      selectQueryBuilder = selectQueryBuilder.setLock('pessimistic_write');
+    }
+    const entities = await selectQueryBuilder.where(filter).getMany();
+    return entities;
   }
 
   async save(entity: T) {

@@ -25,6 +25,7 @@ describe('clients.admin-web.controller (e2e)', () => {
 
   const smtpAdapterMock: SmtpAdapter = {
     send: jest.fn(async (to, subject, body) => {
+      console.log('mock smtp was called');
       return Promise.resolve();
     }),
   };
@@ -54,9 +55,7 @@ describe('clients.admin-web.controller (e2e)', () => {
     // const createdClientBody2 = await clientsHelper.createClient(command);
     // const createdClientBody3 = await clientsHelper.createClient(command);
 
-    const {
-      data: { item: createdClient },
-    } = createdClientBody;
+    const createdClient = createdClientBody.data!.item;
 
     await clientsHelper.getClient(createdClient.id, {
       expectedClient: createdClient,
@@ -99,9 +98,8 @@ describe('clients.admin-web.controller (e2e)', () => {
     };
 
     const createdClientBody = await clientsHelper.createClient(createCommand);
-    const {
-      data: { item: createdClient },
-    } = createdClientBody;
+
+    const createdClient = createdClientBody.data!.item;
     // update 400 (bad address length)
     const updateCommand: Omit<UpdateClientCommand, 'id'> = {
       firstName: 'dimych2',
@@ -129,7 +127,30 @@ describe('clients.admin-web.controller (e2e)', () => {
 
     await clientsHelper.updateClient(createdClient.id, newUpdateCommand);
 
-    // await new Promise((res) => setTimeout(res, 1000));
+    //await new Promise((res) => setTimeout(res, 1000));
+
+    expect(smtpAdapterMock.send).toBeCalledTimes(2);
+  });
+
+  it('notification should be sent when update client ', async () => {
+    // create
+    const createCommand: CreateClientCommand = {
+      firstName: 'dimych',
+      lastName: 'kuzyuberdin',
+    };
+
+    const createdClientBody = await clientsHelper.createClient(createCommand);
+
+    const createdClient = createdClientBody.data!.item;
+
+    // particular patch update
+    const newUpdateCommand: Omit<UpdateClientCommand, 'id'> = {
+      address: null,
+    };
+
+    await clientsHelper.updateClient(createdClient.id, newUpdateCommand);
+
+    //await new Promise((res) => setTimeout(res, 1000));
 
     expect(smtpAdapterMock.send).toBeCalledTimes(2);
   });
@@ -141,9 +162,8 @@ describe('clients.admin-web.controller (e2e)', () => {
     };
 
     const createdClientBody = await clientsHelper.createClient(command);
-    const {
-      data: { item: createdClient },
-    } = createdClientBody;
+
+    const createdClient = createdClientBody.data!.item;
     await clientsHelper.getClient(createdClient.id);
 
     await request(app.getHttpServer())

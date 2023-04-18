@@ -19,18 +19,17 @@ export class MoneyTransactionsQueryRepository
     return clients.map(MoneyTransactionsQueryRepository.mapEntityToViewModel);
   }
 
-  async getById(id: string): Promise<MoneyTransactionsViewModel> {
+  async getById(id: string): Promise<MoneyTransactionsViewModel | null> {
     const entity = await this.ormRepo.findOneBy({
       id: id,
     });
+    if (!entity) return null;
     return MoneyTransactionsQueryRepository.mapEntityToViewModel(entity);
   }
 
   static mapEntityToViewModel(
     entity: MoneyTransfer,
   ): MoneyTransactionsViewModel {
-    if (!entity) return null;
-
     const viewModel: MoneyTransactionsViewModel = {
       id: entity.id,
       fromWalletId: entity.fromWalletId,

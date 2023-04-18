@@ -40,30 +40,22 @@ describe('clients.admin-web.controller (e2e)', () => {
   });
 
   it('make transaction with concurrency', async () => {
-    const {
-      data: { item: client1 },
-    } = await clientsHelper.createClient({
+    const client1 = await clientsHelper.createClient({
       firstName: 'dimych',
       lastName: 'kuzyuberdin',
     });
 
-    const {
-      data: { item: client2 },
-    } = await clientsHelper.createClient({
+    const client2 = await clientsHelper.createClient({
       firstName: 'misha',
       lastName: 'kuzyuberdin',
     });
 
-    const {
-      data: { item: wallet1 },
-    } = await walletsHelper.createWallet({
-      clientId: client1.id,
+    const wallet1 = await walletsHelper.createWallet({
+      clientId: client1.data!.item.id,
     });
 
-    const {
-      data: { item: wallet2 },
-    } = await walletsHelper.createWallet({
-      clientId: client2.id,
+    const wallet2 = await walletsHelper.createWallet({
+      clientId: client2.data!.item.id,
     });
 
     /*const {
@@ -75,21 +67,22 @@ describe('clients.admin-web.controller (e2e)', () => {
 
     const makeTransaction = () =>
       walletsHelper.makeTransaction({
-        fromWalletId: wallet1.id,
-        toWalletId: wallet2.id,
+        fromWalletId: wallet1.data!.item.id,
+        toWalletId: wallet2.data!.item.id,
         amount: 10,
       });
     const makeTransactionBack = () =>
       walletsHelper.makeTransaction({
-        fromWalletId: wallet2.id,
-        toWalletId: wallet1.id,
+        fromWalletId: wallet2.data!.item.id,
+        toWalletId: wallet1.data!.item.id,
         amount: 10,
       });
 
+    // todo: test deadlock... need restore test
     const results = await Promise.all([
       makeTransaction(),
       makeTransactionBack(),
-      /*  makeTransaction(),
+      /*   makeTransaction(),
       makeTransactionBack(),
       makeTransaction(),
       makeTransactionBack(),
@@ -98,27 +91,23 @@ describe('clients.admin-web.controller (e2e)', () => {
       makeTransaction(),
       makeTransactionBack(),*/
     ]);
-    const {
-      data: { item: transaction1 },
-    } = results[0];
-    const {
-      data: { item: transaction2 },
-    } = results[1];
+    const transaction1 = results[0].data!.item;
+    const transaction2 = results[1].data!.item;
     /*const {
       data: { item: transaction3 },
     } = results[2];*/
 
-    await walletsHelper.getWallet(wallet1.id, {
+    await walletsHelper.getWallet(wallet1.data!.item.id, {
       expectedItem: {
-        id: wallet1.id,
+        id: wallet1.data!.item.id,
         balance: 100,
         title: expect.any(String),
       },
     });
 
-    await walletsHelper.getWallet(wallet2.id, {
+    await walletsHelper.getWallet(wallet2.data!.item.id, {
       expectedItem: {
-        id: wallet2.id,
+        id: wallet2.data!.item.id,
         balance: 100,
         title: expect.any(String),
       },
@@ -126,55 +115,45 @@ describe('clients.admin-web.controller (e2e)', () => {
   });
 
   it('make transaction', async () => {
-    const {
-      data: { item: client1 },
-    } = await clientsHelper.createClient({
+    const client1 = await clientsHelper.createClient({
       firstName: 'dimych',
       lastName: 'kuzyuberdin',
     });
 
-    const {
-      data: { item: client2 },
-    } = await clientsHelper.createClient({
+    const client2 = await clientsHelper.createClient({
       firstName: 'misha',
       lastName: 'kuzyuberdin',
     });
 
-    const {
-      data: { item: wallet1 },
-    } = await walletsHelper.createWallet({
-      clientId: client1.id,
+    const wallet1 = await walletsHelper.createWallet({
+      clientId: client1.data!.item.id,
     });
 
-    const {
-      data: { item: wallet2 },
-    } = await walletsHelper.createWallet({
-      clientId: client2.id,
+    const wallet2 = await walletsHelper.createWallet({
+      clientId: client2.data!.item.id,
     });
 
     const makeTransaction = () =>
       walletsHelper.makeTransaction({
-        fromWalletId: wallet1.id,
-        toWalletId: wallet2.id,
+        fromWalletId: wallet1.data!.item.id,
+        toWalletId: wallet2.data!.item.id,
         amount: 10,
       });
 
     const results = await Promise.all([makeTransaction()]);
-    const {
-      data: { item: transaction1 },
-    } = results[0];
+    const transaction1 = results[0].data!.item;
 
-    await walletsHelper.getWallet(wallet1.id, {
+    await walletsHelper.getWallet(wallet1.data!.item.id, {
       expectedItem: {
-        id: wallet1.id,
+        id: wallet1.data!.item.id,
         balance: 100,
         title: expect.any(String),
       },
     });
 
-    await walletsHelper.getWallet(wallet2.id, {
+    await walletsHelper.getWallet(wallet2.data!.item.id, {
       expectedItem: {
-        id: wallet2.id,
+        id: wallet2.data!.item.id,
         balance: 100,
         title: expect.any(String),
       },

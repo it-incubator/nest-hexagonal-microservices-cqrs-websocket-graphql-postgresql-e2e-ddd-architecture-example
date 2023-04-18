@@ -1,11 +1,11 @@
 import { HttpStatus, INestApplication } from '@nestjs/common';
-import { ResultNotification } from '../../dist/core/validation/notification';
-import { ClientViewModel } from '../../dist/features/clients/db/clients.query.repository';
 import * as request from 'supertest';
 import { endpoints } from '../../src/features/wallets/api/client-web/wallets.controller';
-import { CreateWalletCommand } from '../../dist/features/wallets/application/use-cases/create-wallet.usecase';
-import { MakeTransactionCommand } from '../../dist/features/wallets/application/use-cases/make-transaction.usecase';
-import { WalletViewModel } from '../../dist/features/wallets/db/wallets.query.repository';
+import { ResultNotification } from 'src/modules/core/validation/notification';
+import { CreateWalletCommand } from '../../src/features/wallets/application/use-cases/create-wallet.usecase';
+import { MakemoneyTransferCommand } from '../../src/features/wallets/application/use-cases/make-money-transfer-use.case';
+import { ClientViewModel } from '../../src/features/clients/db/clients.query.repository';
+import { WalletViewModel } from '../../src/features/wallets/db/wallets.query.repository';
 
 export class WalletsHelper {
   constructor(private app: INestApplication) {}
@@ -62,7 +62,7 @@ export class WalletsHelper {
   }
 
   async makeTransaction(
-    command: MakeTransactionCommand,
+    command: MakemoneyTransferCommand,
     config: {
       expectedBody?: any;
       expectedCode?: number;

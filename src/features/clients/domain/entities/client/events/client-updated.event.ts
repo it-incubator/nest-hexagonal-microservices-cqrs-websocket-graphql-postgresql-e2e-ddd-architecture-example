@@ -5,12 +5,12 @@ export class ClientUpdatedEvent {
 
   public firstName?: string;
   public lastName?: string;
-  public address?: string;
+  public address?: string | null;
 
   constructor(clientId: string, command: UpdateClientCommand) {
     this.clientId = clientId;
 
-    if (typeof command.address !== undefined) {
+    if (typeof command.address !== 'undefined') {
       this.address = command.address;
     }
     if (command.firstName) {

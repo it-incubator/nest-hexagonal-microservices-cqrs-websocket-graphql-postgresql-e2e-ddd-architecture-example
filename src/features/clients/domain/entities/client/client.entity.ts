@@ -7,13 +7,11 @@ import { randomUUID } from 'crypto';
 import { ApiProperty } from '@nestjs/swagger';
 import { IsOptional, IsString, Length } from 'class-validator';
 import { validateEntity } from '../../../../../modules/core/validation/validation-utils';
-import {
-  DomainResultNotification,
-  ResultNotification,
-} from '../../../../../modules/core/validation/notification';
+import { DomainResultNotification } from '../../../../../modules/core/validation/notification';
 import { Wallet } from '../../../../wallets/domain/entities/wallet.entity';
 import { ClientUpdatedEvent } from './events/client-updated.event';
 import { ClientCreatedEvent } from './events/client-created.event';
+import { ClientDeletedEvent } from './events/client-deleted.event';
 
 export const validationsContsts = {
   firstName: {
@@ -31,12 +29,6 @@ export const validationsContsts = {
 };
 
 export class CreateClientCommand {
-  // @ApiProperty()
-  // forgot (or ignore) add validation
-  // @Length(
-  //   validationsContsts.firstName.minLength,
-  //   validationsContsts.firstName.maxLength,
-  // )
   @IsString()
   public firstName: string;
   @ApiProperty()
@@ -69,7 +61,7 @@ export class UpdateClientCommand {
     validationsContsts.address.maxLength,
   )
   @IsOptional()
-  public address?: string;
+  public address?: string | null;
 }
 
 @Entity()
@@ -88,6 +80,7 @@ export class Client extends BaseDomainAggregateRootEntity {
   public lastName: string;
   @Column({
     nullable: true,
+    type: 'text',
   })
   public address: string | null;
   @Column()
@@ -117,7 +110,9 @@ export class Client extends BaseDomainAggregateRootEntity {
     return validateEntity(client, [clientCreatedEvent]);
   }
 
-  update(command: UpdateClientCommand): Promise<ResultNotification<Client>> {
+  update(
+    command: UpdateClientCommand,
+  ): Promise<DomainResultNotification<Client>> {
     // we not allow null and empty
     if (command.firstName) {
       this.firstName = command.firstName;
@@ -127,13 +122,35 @@ export class Client extends BaseDomainAggregateRootEntity {
       this.lastName = command.lastName;
     }
     // we allow null
-    if (typeof command.address !== undefined) {
+    if (typeof command.address !== 'undefined') {
       this.address = command.address;
     }
 
     const updateEvent = new ClientUpdatedEvent(this.id, command);
 
     return validateEntity(this, [updateEvent]);
+  }
+
+  delete(wallets: Wallet[]) {
+    const domainResultNotification = new DomainResultNotification<Client>(this);
+
+    if (this.status === ClientStatus.Deleted) {
+      domainResultNotification.addError(`Client is alreade deleted`, null, 1);
+      return domainResultNotification;
+    }
+
+    if (wallets.some((w) => w.balance > 0)) {
+      domainResultNotification.addError(
+        `You can't delete client with no 0 balance`,
+        null,
+        1,
+      );
+      return domainResultNotification;
+    }
+    this.status = ClientStatus.Deleted;
+    domainResultNotification.addEvents(new ClientDeletedEvent(this.id));
+
+    return domainResultNotification;
   }
 }
 
@@ -143,6 +160,7 @@ export enum ClientStatus {
   Active = 2,
   Rejected = 3,
   Blocked = 4,
+  Deleted = 5,
 }
 
 class PassportScan extends BaseDomainEntity {

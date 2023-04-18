@@ -32,19 +32,24 @@ export const validateEntity = async <T extends object>(
   try {
     await validateOrReject(entity);
   } catch (errors) {
-    const resultNotification: DomainResultNotification = mapErorsToNotification(
-      validationErrorsMapper.mapValidationErrorArrayToValidationPipeErrorTypeArray(
-        errors,
-      ),
-    );
-    resultNotification.addEvents(events);
+    const resultNotification: DomainResultNotification<T> =
+      mapErorsToNotification<T>(
+        validationErrorsMapper.mapValidationErrorArrayToValidationPipeErrorTypeArray(
+          errors,
+        ),
+      );
+    resultNotification.addData(entity);
+    resultNotification.addEvents(events); // todo: should add events when error?
     return resultNotification;
   }
-  return new DomainResultNotification<T>(entity);
+  const domainResultNotification = new DomainResultNotification<T>(entity);
+  domainResultNotification.addEvents(events);
+
+  return domainResultNotification;
 };
 
-export function mapErorsToNotification(errors: ValidationPipeErrorType[]) {
-  const resultNotification = new DomainResultNotification();
+export function mapErorsToNotification<T>(errors: ValidationPipeErrorType[]) {
+  const resultNotification = new DomainResultNotification<T>();
   errors.forEach((item: ValidationPipeErrorType) =>
     resultNotification.addError(item.message, item.field, 1),
   );

@@ -4,6 +4,11 @@ import { asyncLocalStorage, StoreType } from '../../config/middlewareSetup';
 @Injectable()
 export class StoreService {
   getStore(): StoreType {
-    return asyncLocalStorage.getStore();
+    const store = asyncLocalStorage.getStore();
+    if (!store)
+      throw new Error(
+        'Set up middleware to save store: StoreType to asyncLocalStorage',
+      );
+    return store;
   }
 }

@@ -1,4 +1,4 @@
-import { CommandBus } from '@nestjs/cqrs';
+import { CommandBus, ICommand } from '@nestjs/cqrs';
 import { ResultNotification } from '../../validation/notification';
 import { BadRequestException } from '@nestjs/common';
 import { BaseDomainEntity } from '../../entities/baseDomainEntity';
@@ -15,7 +15,7 @@ export class ItemCreatedResultNotification<
 
 export class BaseCrudApiService<
   TEntity extends BaseDomainEntity,
-  TCommand,
+  TCommand extends ICommand,
   TViewModel,
 > {
   constructor(
@@ -32,7 +32,7 @@ export class BaseCrudApiService<
       throw new BadRequestException(notification);
     } else {
       const viewModel = await this.queryRepository.getById(
-        notification.data.id,
+        notification.data!.id,
       );
       return new ItemCreatedResultNotification(viewModel);
     }
