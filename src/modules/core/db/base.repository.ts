@@ -19,11 +19,12 @@ export class BaseRepository<T extends BaseDomainEntity> {
     // this.ormRepo = managerWrapper.getRepository<T>(_class);
   }
 
-  async getById(id: string, options: { lock: boolean } = { lock: true }) {
+  async getById(id: string, options: { lock: boolean } = { lock: false }) {
     if (!id) {
       throw new Error('Repository Error: id should be defined for getById');
     }
     let selectQueryBuilder = this.getRepository().createQueryBuilder();
+
     if (options.lock) {
       //FIXME: An open transaction is required for pessimistic lock.
       selectQueryBuilder = selectQueryBuilder.setLock('pessimistic_write');

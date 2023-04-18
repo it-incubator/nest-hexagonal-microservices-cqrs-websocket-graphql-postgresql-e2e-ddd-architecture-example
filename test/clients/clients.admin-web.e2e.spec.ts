@@ -45,6 +45,29 @@ describe('clients.admin-web.controller (e2e)', () => {
     await app.close();
   });
 
+  it('notification should be sent when update client ', async () => {
+    // create
+    const createCommand: CreateClientCommand = {
+      firstName: 'dimych',
+      lastName: 'kuzyuberdin',
+    };
+
+    const createdClientBody = await clientsHelper.createClient(createCommand);
+
+    const createdClient = createdClientBody.data!.item;
+
+    // particular patch update
+    const newUpdateCommand: Omit<UpdateClientCommand, 'id'> = {
+      address: null,
+    };
+
+    await clientsHelper.updateClient(createdClient.id, newUpdateCommand);
+
+    await new Promise((res) => setTimeout(res, 1000));
+
+    expect(smtpAdapterMock.send).toBeCalledTimes(1);
+  });
+
   it('create client', async () => {
     const command: CreateClientCommand = {
       firstName: 'dimych',
@@ -126,33 +149,6 @@ describe('clients.admin-web.controller (e2e)', () => {
     };
 
     await clientsHelper.updateClient(createdClient.id, newUpdateCommand);
-
-    //await new Promise((res) => setTimeout(res, 1000));
-
-    expect(smtpAdapterMock.send).toBeCalledTimes(2);
-  });
-
-  it('notification should be sent when update client ', async () => {
-    // create
-    const createCommand: CreateClientCommand = {
-      firstName: 'dimych',
-      lastName: 'kuzyuberdin',
-    };
-
-    const createdClientBody = await clientsHelper.createClient(createCommand);
-
-    const createdClient = createdClientBody.data!.item;
-
-    // particular patch update
-    const newUpdateCommand: Omit<UpdateClientCommand, 'id'> = {
-      address: null,
-    };
-
-    await clientsHelper.updateClient(createdClient.id, newUpdateCommand);
-
-    await new Promise((res) => setTimeout(res, 1000));
-
-    expect(smtpAdapterMock.send).toBeCalledTimes(1);
   });
 
   it('delete client', async () => {
