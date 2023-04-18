@@ -4,6 +4,7 @@ import {
   validationErrorsMapper,
   ValidationPipeErrorType,
 } from '../../../config/pipesSetup';
+import { IEvent } from '@nestjs/cqrs';
 
 export class DomainError extends Error {
   constructor(message: string, public resultNotification: ResultNotification) {
@@ -27,7 +28,7 @@ export const validateEntityOrThrow = async (entity: any) => {
 
 export const validateEntity = async <T extends object>(
   entity: T,
-  events: any,
+  events: IEvent[],
 ): Promise<DomainResultNotification<T>> => {
   try {
     await validateOrReject(entity);
@@ -39,11 +40,11 @@ export const validateEntity = async <T extends object>(
         ),
       );
     resultNotification.addData(entity);
-    resultNotification.addEvents(events); // todo: should add events when error?
+    resultNotification.addEvents(...events);
     return resultNotification;
   }
   const domainResultNotification = new DomainResultNotification<T>(entity);
-  domainResultNotification.addEvents(events);
+  domainResultNotification.addEvents(...events);
 
   return domainResultNotification;
 };

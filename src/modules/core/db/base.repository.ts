@@ -25,6 +25,7 @@ export class BaseRepository<T extends BaseDomainEntity> {
     }
     let selectQueryBuilder = this.getRepository().createQueryBuilder();
     if (options.lock) {
+      //FIXME: An open transaction is required for pessimistic lock.
       selectQueryBuilder = selectQueryBuilder.setLock('pessimistic_write');
     }
     const entity = await selectQueryBuilder.where({ id: id }).getOneOrFail();

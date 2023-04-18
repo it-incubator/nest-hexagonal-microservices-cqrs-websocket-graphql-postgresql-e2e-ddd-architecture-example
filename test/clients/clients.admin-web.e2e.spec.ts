@@ -150,9 +150,9 @@ describe('clients.admin-web.controller (e2e)', () => {
 
     await clientsHelper.updateClient(createdClient.id, newUpdateCommand);
 
-    //await new Promise((res) => setTimeout(res, 1000));
+    await new Promise((res) => setTimeout(res, 1000));
 
-    expect(smtpAdapterMock.send).toBeCalledTimes(2);
+    expect(smtpAdapterMock.send).toBeCalledTimes(1);
   });
 
   it('delete client', async () => {
