@@ -3,6 +3,7 @@ import { EventsHandler, IEventHandler } from '@nestjs/cqrs';
 import { SmtpAdapter } from '../../../../modules/core/infrastructure/smtp.adapter';
 import { ClientsRepository } from '../../db/clients.repository';
 
+// todo: CreateBaseEventHandler
 @EventsHandler(ClientUpdatedEvent)
 export class SendEmailToManagerWhenClientUpdatedEventHandler
   implements IEventHandler<ClientUpdatedEvent>

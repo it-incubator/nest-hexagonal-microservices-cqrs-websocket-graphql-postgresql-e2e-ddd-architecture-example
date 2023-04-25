@@ -19,7 +19,7 @@ export class BaseRepository<T extends BaseDomainEntity> {
     // this.ormRepo = managerWrapper.getRepository<T>(_class);
   }
 
-  async getById(id: string, options: { lock: boolean } = { lock: false }) {
+  async getById(id: string, options: { lock: boolean } = { lock: true }) {
     if (!id) {
       throw new Error('Repository Error: id should be defined for getById');
     }
