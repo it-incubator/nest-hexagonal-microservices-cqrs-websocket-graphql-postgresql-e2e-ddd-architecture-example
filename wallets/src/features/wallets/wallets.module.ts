@@ -11,7 +11,7 @@ import { MoneyTransactionsRepository } from './db/money-transactions-repository.
 import { CreateWalletUseCase } from './application/use-cases/create-wallet.usecase';
 import { MakeMoneyTransferUseCase } from './application/use-cases/make-money-transfer-use.case';
 import { MoneyTransactionsQueryRepository } from './db/money-transactions.query.repository';
-import { StoreService } from '../clients/store.service';
+import { StoreService } from '../../modules/core/infrastructure/store.service';
 import { MoneyRemovedFromWalletBalanceEventHandler } from './application/events-handlers/notify-client-when-money-waithdrawn-from-wallet-balance.event.handler';
 import { MoneyAddedToWalletBalanceEvent } from './domain/entities/wallet/events/moneyAddedToWalletBalanceEvent';
 

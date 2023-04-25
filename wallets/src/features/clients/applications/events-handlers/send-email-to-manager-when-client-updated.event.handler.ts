@@ -15,7 +15,9 @@ export class SendEmailToManagerWhenClientUpdatedEventHandler
 
   async handle(event: ClientUpdatedEvent) {
     console.log(event);
-    const client = await this.clientsRepo.getById(event.clientId);
+    const client = await this.clientsRepo.getById(event.clientId, {
+      lock: false,
+    });
     await this.smtp.send(
       'client.email',
       'client changed',

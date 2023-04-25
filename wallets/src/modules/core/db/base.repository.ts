@@ -1,5 +1,5 @@
 import { BaseDomainEntity } from '../entities/baseDomainEntity';
-import { StoreService } from '../../../features/clients/store.service';
+import { StoreService } from '../infrastructure/store.service';
 
 /*export interface BaseRepository<T> {
   getById(id: string): Promise<T>;
@@ -35,13 +35,31 @@ export class BaseRepository<T extends BaseDomainEntity> {
 
   async getMany(
     filter: Partial<T>,
-    options: { lock: boolean } = { lock: false },
+    options: {
+      lock: /*todo: ?*/ boolean;
+      sortBy: /* todo: ?*/ SortProperty<keyof T>[];
+    } = {
+      lock: false,
+      sortBy: [],
+    },
   ) {
+    // todo: process defaults separatly
+
     let selectQueryBuilder = this.getRepository().createQueryBuilder();
     if (options.lock) {
       selectQueryBuilder = selectQueryBuilder.setLock('pessimistic_write');
     }
-    const entities = await selectQueryBuilder.where(filter).getMany();
+    selectQueryBuilder = selectQueryBuilder.where(filter);
+
+    // todo: support case for many properties
+    if (options.sortBy.length > 0) {
+      selectQueryBuilder = selectQueryBuilder.orderBy(
+        options.sortBy[0].propertyName as string,
+        options.sortBy[0].direction,
+      );
+    }
+
+    const entities = await selectQueryBuilder.getMany();
     return entities;
   }
 
@@ -53,7 +71,24 @@ export class BaseRepository<T extends BaseDomainEntity> {
     await this.getRepository().delete(id);
   }
 
-  private getRepository() {
+  protected getRepository() {
     return this.store.getStore().managerWrapper.getRepository<T>(this._class);
   }
 }
+
+export type SortProperty<TPropertyName> = {
+  propertyName: TPropertyName;
+  direction: SortDirection;
+};
+
+export enum SortDirection {
+  ASC = 'ASC',
+  DESC = 'DESC',
+}
+
+class Man {
+  public address: string;
+  public age: string;
+}
+
+const propName: keyof Man = 'address';

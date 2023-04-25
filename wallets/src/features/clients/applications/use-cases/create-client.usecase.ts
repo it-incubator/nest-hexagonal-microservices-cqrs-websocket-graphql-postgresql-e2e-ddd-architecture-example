@@ -3,11 +3,11 @@ import {
   Client,
   CreateClientCommand,
 } from '../../domain/entities/client/client.entity';
-import { CommandHandler, EventBus } from '@nestjs/cqrs';
+import { CommandHandler } from '@nestjs/cqrs';
 import { SecurityGovApiAdapter } from '../../infrastructure/security-gov-api.adapter';
 import { DomainResultNotification } from '../../../../modules/core/validation/notification';
 import { BaseUsecase } from '../../../../modules/core/app/baseUsecase';
-import { StoreService } from '../../store.service';
+import { BaseUseCaseServicesWrapper } from '../../../../modules/core/infrastructure/BaseUseCaseServicesWrapper';
 
 @CommandHandler(CreateClientCommand)
 export class CreateClientUseCase extends BaseUsecase<
@@ -16,11 +16,10 @@ export class CreateClientUseCase extends BaseUsecase<
 > {
   constructor(
     private clientsRepo: ClientsRepository,
-    private storeService: StoreService,
-    eventBus: EventBus,
+    baseUseCaseServicesWrapper: BaseUseCaseServicesWrapper,
     private securityGovApiAdapter: SecurityGovApiAdapter, //private storeService: StoreService,
   ) {
-    super(storeService, eventBus);
+    super(baseUseCaseServicesWrapper);
   }
 
   protected async onExecute(

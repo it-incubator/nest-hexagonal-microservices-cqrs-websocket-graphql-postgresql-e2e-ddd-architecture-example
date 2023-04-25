@@ -1,10 +1,10 @@
 import { ClientsRepository } from '../../db/clients.repository';
-import { CommandHandler, EventBus } from '@nestjs/cqrs';
+import { CommandHandler } from '@nestjs/cqrs';
 import { BaseUsecase } from '../../../../modules/core/app/baseUsecase';
 import { Client } from '../../domain/entities/client/client.entity';
-import { StoreService } from '../../store.service';
 import { DomainResultNotification } from '../../../../modules/core/validation/notification';
 import { WalletsRepository } from '../../../wallets/db/wallets.repository';
+import { BaseUseCaseServicesWrapper } from '../../../../modules/core/infrastructure/BaseUseCaseServicesWrapper';
 
 export class DeleteClientCommand {
   constructor(public id: string) {}
@@ -18,10 +18,9 @@ export class DeleteClientUseCase extends BaseUsecase<
   constructor(
     private clientsRepo: ClientsRepository,
     private walletsRepo: WalletsRepository,
-    eventBus: EventBus,
-    storeService: StoreService,
+    baseUseCaseServicesWrapper: BaseUseCaseServicesWrapper,
   ) {
-    super(storeService, eventBus);
+    super(baseUseCaseServicesWrapper);
   }
 
   protected async onExecute(

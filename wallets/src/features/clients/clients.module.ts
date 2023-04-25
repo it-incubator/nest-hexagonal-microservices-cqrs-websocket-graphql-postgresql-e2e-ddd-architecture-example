@@ -12,7 +12,6 @@ import { DeleteClientUseCase } from './applications/use-cases/delete-client.usec
 import { SecurityGovApiAdapter } from './infrastructure/security-gov-api.adapter';
 import { ClientCrudApiService } from './api/admin-web/services/clients-crud-api.service';
 // import { entityManagerProvider } from '../../core/app/initEntityManagerWrapper';
-import { StoreService } from './store.service';
 import { SendEmailToManagerWhenClientUpdatedEventHandler } from './applications/events-handlers/send-email-to-manager-when-client-updated.event.handler';
 import { WalletsModule } from '../wallets/wallets.module';
 
@@ -25,7 +24,11 @@ const useCases = [
 const eventHandlers = [SendEmailToManagerWhenClientUpdatedEventHandler];
 
 @Module({
-  imports: [CqrsModule, TypeOrmModule.forFeature([Client]), WalletsModule],
+  imports: [
+    CqrsModule /*todo: remove??*/,
+    TypeOrmModule.forFeature([Client]),
+    WalletsModule,
+  ],
   controllers: [ClientsController],
   providers: [
     ClientsService,
@@ -35,7 +38,6 @@ const eventHandlers = [SendEmailToManagerWhenClientUpdatedEventHandler];
     ClientCrudApiService,
     ...useCases,
     ...eventHandlers,
-    StoreService,
     // entityManagerProvider(),
   ],
 })

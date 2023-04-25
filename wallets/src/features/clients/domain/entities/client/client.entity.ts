@@ -1,7 +1,4 @@
-import {
-  BaseDomainAggregateRootEntity,
-  BaseDomainEntity,
-} from '../../../../../modules/core/entities/baseDomainEntity';
+import { BaseDomainEntity } from '../../../../../modules/core/entities/baseDomainEntity';
 import { Column, Entity } from 'typeorm';
 import { randomUUID } from 'crypto';
 import { ApiProperty } from '@nestjs/swagger';
@@ -65,7 +62,7 @@ export class UpdateClientCommand {
 }
 
 @Entity()
-export class Client extends BaseDomainAggregateRootEntity {
+export class Client extends BaseDomainEntity {
   @Column()
   @Length(
     validationsContsts.firstName.minLength,

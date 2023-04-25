@@ -1,10 +1,10 @@
-import { CommandHandler, EventBus } from '@nestjs/cqrs';
+import { CommandHandler } from '@nestjs/cqrs';
 import { DomainResultNotification } from '../../../../modules/core/validation/notification';
 import { IsString } from 'class-validator';
 import { WalletsRepository } from '../../db/wallets.repository';
 import { Wallet } from '../../domain/entities/wallet.entity';
 import { BaseUsecase } from '../../../../modules/core/app/baseUsecase';
-import { StoreService } from '../../../clients/store.service';
+import { BaseUseCaseServicesWrapper } from '../../../../modules/core/infrastructure/BaseUseCaseServicesWrapper';
 
 export class CreateWalletCommand {
   @IsString()
@@ -18,10 +18,9 @@ export class CreateWalletUseCase extends BaseUsecase<
 > {
   constructor(
     private walletsRepository: WalletsRepository,
-    eventBus: EventBus,
-    storeService: StoreService,
+    baseUseCaseServicesWrapper: BaseUseCaseServicesWrapper,
   ) {
-    super(storeService, eventBus);
+    super(baseUseCaseServicesWrapper);
   }
 
   protected async onExecute(

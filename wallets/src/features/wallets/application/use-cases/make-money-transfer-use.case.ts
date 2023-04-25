@@ -1,11 +1,11 @@
-import { CommandHandler, EventBus } from '@nestjs/cqrs';
+import { CommandHandler } from '@nestjs/cqrs';
 import { MoneyTransfer } from '../../domain/entities/money-transaction.entity';
 import { IsNumber, IsString } from 'class-validator';
 import { WalletsRepository } from '../../db/wallets.repository';
 import { MoneyTransactionsRepository } from '../../db/money-transactions-repository.service';
 import { BaseUsecase } from '../../../../modules/core/app/baseUsecase';
-import { StoreService } from '../../../clients/store.service';
 import { DomainResultNotification } from '../../../../modules/core/validation/notification';
+import { BaseUseCaseServicesWrapper } from '../../../../modules/core/infrastructure/BaseUseCaseServicesWrapper';
 
 export class MakemoneyTransferCommand {
   @IsString()
@@ -24,13 +24,10 @@ export class MakeMoneyTransferUseCase extends BaseUsecase<
   constructor(
     private walletsRepository: WalletsRepository,
     private moneyTransactionRepository: MoneyTransactionsRepository,
-    store: StoreService,
-    eventBus: EventBus,
-    // dataSource: DataSource,
+    baseUseCaseServicesWrapper: BaseUseCaseServicesWrapper,
   ) {
-    super(store, eventBus);
-  } // private securityGovApiAdapter: SecurityGovApiAdapter, //  private clientsRepo: ClientsRepository,
-
+    super(baseUseCaseServicesWrapper);
+  }
   protected async onExecute(
     command: MakemoneyTransferCommand,
     //managerWrapper: EntityManagerWrapper,
