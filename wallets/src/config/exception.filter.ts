@@ -8,7 +8,7 @@ import { Request, Response } from 'express';
 import { ResultNotification } from '../modules/core/validation/notification';
 import {
   DomainError,
-  mapErorsToNotification,
+  mapErrorsToNotification,
 } from '../modules/core/validation/validation-utils';
 
 @Catch(DomainError)
@@ -35,7 +35,7 @@ export class ValidationExceptionFilter implements ExceptionFilter {
         response.status(status).json(resp);
         return;
       }
-      const resultNotification = mapErorsToNotification(resp.message);
+      const resultNotification = mapErrorsToNotification(resp.message);
       response.status(status).json(resultNotification);
     } else {
       response.status(status).json({
