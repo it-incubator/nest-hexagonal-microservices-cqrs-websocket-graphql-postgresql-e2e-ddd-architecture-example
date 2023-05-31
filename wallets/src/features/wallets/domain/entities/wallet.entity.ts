@@ -35,6 +35,7 @@ export class Wallet extends BaseDomainEntity {
   @OneToMany(() => Wallet, (wallet) => wallet.client)
   public wallets: Wallet[];
 
+  // factory
   public static create(command: CreateWalletCommand) {
     const wallet = new Wallet();
     wallet.id = randomUUID();

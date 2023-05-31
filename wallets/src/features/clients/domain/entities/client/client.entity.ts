@@ -1,5 +1,5 @@
 import { BaseDomainEntity } from '../../../../../modules/core/entities/baseDomainEntity';
-import { Column, Entity } from 'typeorm';
+import { AfterLoad, Column, Entity } from 'typeorm';
 import { randomUUID } from 'crypto';
 import { ApiProperty } from '@nestjs/swagger';
 import { IsOptional, IsString, Length } from 'class-validator';
@@ -8,7 +8,13 @@ import { DomainResultNotification } from '../../../../../modules/core/validation
 import { Wallet } from '../../../../wallets/domain/entities/wallet.entity';
 import { ClientUpdatedEvent } from './events/client-updated.event';
 import { ClientCreatedEvent } from './events/client-created.event';
-import { ClientDeletedEvent } from './events/client-deleted.event';
+import { IClientStatusState } from './status-states/IClientStatusState';
+import { ClientDeletedState } from './status-states/ClientDeletedState';
+import { ClientBlockedState } from './status-states/ClientBlockedState';
+import { ClientRejectedState } from './status-states/ClientRejectedState';
+import { ClientActiveState } from './status-states/ClientActiveState';
+import { ClientOnVerificationState } from './status-states/ClientOnVerificationState';
+import { ClientNewState } from './status-states/ClientNewState';
 
 export const validationsContsts = {
   firstName: {
@@ -34,6 +40,15 @@ export class CreateClientCommand {
     validationsContsts.lastName.maxLength,
   )
   public lastName: string;
+}
+
+export class UpdatePassportDataCommand {
+  constructor(
+    public serial: string,
+    public number: string,
+    public issueDate: Date,
+    public clientId: string,
+  ) {}
 }
 
 export class UpdateClientCommand {
@@ -86,7 +101,8 @@ export class Client extends BaseDomainEntity {
   public totalBalanceInUSD: number; // ???
   public wallets: Wallet[];
   public passportScan: FileInfo;
-
+  public passportData: PassportInfo;
+  private clientStatusState: IClientStatusState;
   static async create(
     command: CreateClientCommand,
   ): Promise<DomainResultNotification<Client>> {
@@ -128,8 +144,31 @@ export class Client extends BaseDomainEntity {
     return validateEntity(this, [updateEvent]);
   }
 
+  @AfterLoad()
+  initStatusState(): void {
+    switch (this.status) {
+      case ClientStatus.New:
+        this.clientStatusState = new ClientNewState(this);
+      case ClientStatus.OnVerification:
+        this.clientStatusState = new ClientOnVerificationState(this);
+      case ClientStatus.Active:
+        this.clientStatusState = new ClientActiveState(this);
+      case ClientStatus.Rejected:
+        this.clientStatusState = new ClientRejectedState(this);
+      case ClientStatus.Blocked:
+        this.clientStatusState = new ClientBlockedState(this);
+      case ClientStatus.Deleted:
+        this.clientStatusState = new ClientDeletedState(this);
+      default:
+        throw new Error(
+          'ClientStatusState is not registered for this status: ' + this.status,
+        );
+    }
+  }
+
   delete(wallets: Wallet[]) {
-    const domainResultNotification = new DomainResultNotification<Client>(this);
+    this.clientStatusState.delete(wallets);
+    /* const domainResultNotification = new DomainResultNotification<Client>(this);
 
     if (this.status === ClientStatus.Deleted) {
       domainResultNotification.addError(`Client is alreade deleted`, null, 1);
@@ -147,7 +186,57 @@ export class Client extends BaseDomainEntity {
     this.status = ClientStatus.Deleted;
     domainResultNotification.addEvents(new ClientDeletedEvent(this.id));
 
-    return domainResultNotification;
+    return domainResultNotification;*/
+  }
+
+  activate() {
+    if (this.status !== ClientStatus.OnVerification) {
+      throw new Error(`can't be activate`);
+    }
+    this.status = ClientStatus.Active;
+  }
+
+  reject() {
+    if (this.status !== ClientStatus.OnVerification) {
+      throw new Error(`can't be rejected`);
+    }
+    this.status = ClientStatus.Rejected;
+  }
+
+  updatePassportDeprecated(command: UpdatePassportDataCommand) {
+    switch (this.status) {
+      case ClientStatus.New:
+        this.passportData.serial = command.serial;
+        this.passportData.number = command.number;
+        this.passportData.issueDate = command.issueDate;
+        break;
+      case ClientStatus.OnVerification:
+        throw new Error('');
+        break;
+      case ClientStatus.Active:
+        this.passportData.serial = command.serial;
+        this.passportData.number = command.number;
+        this.passportData.issueDate = command.issueDate;
+
+        this.status = ClientStatus.OnVerification;
+        break;
+      case ClientStatus.Rejected:
+        this.passportData.serial = command.serial;
+        this.passportData.number = command.number;
+        this.passportData.issueDate = command.issueDate;
+
+        this.status = ClientStatus.OnVerification;
+        break;
+      case ClientStatus.Blocked:
+        throw new Error('');
+        break;
+      case ClientStatus.Deleted:
+        throw new Error('');
+        break;
+    }
+  }
+  updatePassport(command: UpdatePassportDataCommand) {
+    this.clientStatusState.updatePassport(command);
   }
 }
 
@@ -170,4 +259,10 @@ enum PassportScanStatus {}
 class FileInfo extends BaseDomainEntity {
   public url: string;
   public title: string;
+}
+
+class PassportInfo extends BaseDomainEntity {
+  public serial: string;
+  public number: string;
+  public issueDate: Date;
 }

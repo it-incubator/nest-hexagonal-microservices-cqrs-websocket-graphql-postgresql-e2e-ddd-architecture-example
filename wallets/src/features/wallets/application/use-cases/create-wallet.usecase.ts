@@ -26,6 +26,10 @@ export class CreateWalletUseCase extends BaseUsecase<
   protected async onExecute(
     command: CreateWalletCommand,
   ): Promise<DomainResultNotification<Wallet>> {
+    // const client = await clientRepo.find(command.clientId)
+
+    // await client.createWallet(command)
+
     const notification = await Wallet.create(command);
     await this.walletsRepository.save(notification.data!);
     return notification;
