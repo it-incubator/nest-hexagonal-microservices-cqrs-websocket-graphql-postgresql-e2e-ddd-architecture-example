@@ -16,7 +16,7 @@ import { ClientActiveState } from './status-states/ClientActiveState';
 import { ClientOnVerificationState } from './status-states/ClientOnVerificationState';
 import { ClientNewState } from './status-states/ClientNewState';
 
-export const validationsContsts = {
+export const validationsConstants = {
   firstName: {
     minLength: 2,
     maxLength: 30,
@@ -36,8 +36,8 @@ export class CreateClientCommand {
   public firstName: string;
   @ApiProperty()
   @Length(
-    validationsContsts.lastName.minLength,
-    validationsContsts.lastName.maxLength,
+    validationsConstants.lastName.minLength,
+    validationsConstants.lastName.maxLength,
   )
   public lastName: string;
 }
@@ -55,22 +55,22 @@ export class UpdateClientCommand {
   public id: string;
   @ApiProperty()
   @Length(
-    validationsContsts.firstName.minLength,
-    validationsContsts.firstName.maxLength,
+    validationsConstants.firstName.minLength,
+    validationsConstants.firstName.maxLength,
   )
   @IsOptional()
   public firstName?: string;
   @ApiProperty()
   @Length(
-    validationsContsts.lastName.minLength,
-    validationsContsts.lastName.maxLength,
+    validationsConstants.lastName.minLength,
+    validationsConstants.lastName.maxLength,
   )
   @IsOptional()
   public lastName?: string;
   @ApiProperty()
   @Length(
-    validationsContsts.address.minLength,
-    validationsContsts.address.maxLength,
+    validationsConstants.address.minLength,
+    validationsConstants.address.maxLength,
   )
   @IsOptional()
   public address?: string | null;
@@ -80,14 +80,14 @@ export class UpdateClientCommand {
 export class Client extends BaseDomainEntity {
   @Column()
   @Length(
-    validationsContsts.firstName.minLength,
-    validationsContsts.firstName.maxLength,
+    validationsConstants.firstName.minLength,
+    validationsConstants.firstName.maxLength,
   )
   public firstName: string;
   @Column()
   @Length(
-    validationsContsts.firstName.minLength,
-    validationsContsts.firstName.maxLength,
+    validationsConstants.firstName.minLength,
+    validationsConstants.firstName.maxLength,
   )
   public lastName: string;
   @Column({
