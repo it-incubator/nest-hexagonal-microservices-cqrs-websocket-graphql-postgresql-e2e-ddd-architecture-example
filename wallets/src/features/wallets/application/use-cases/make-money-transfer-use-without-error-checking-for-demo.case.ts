@@ -17,7 +17,7 @@ export class MakemoneyTransferCommand {
 }
 
 @CommandHandler(MakemoneyTransferCommand)
-export class MakeMoneyTransferUseCase extends BaseUsecase<
+export class MakeMoneyTransferWithoutErrorCheckingForDemoUseCase extends BaseUsecase<
   MakemoneyTransferCommand,
   MoneyTransfer | null
 > {
@@ -36,26 +36,16 @@ export class MakeMoneyTransferUseCase extends BaseUsecase<
     const fromWallet = await this.walletsRepository.getById(
       command.fromWalletId,
     );
-
     const toWallet = await this.walletsRepository.getById(command.toWalletId);
 
     const createNotification = await MoneyTransfer.create(command);
-    const withdrawnNotification = fromWallet.withdraw(command.amount);
-    if (withdrawnNotification.hasError()) {
-      return withdrawnNotification;
-    }
-
     const addNotification = toWallet.add(command.amount);
 
-    await this.walletsRepository.save(fromWallet);
-    await this.walletsRepository.save(toWallet);
-
-    await this.moneyTransactionRepository.save(createNotification.data!);
+   await this.walletsRepository.save(fromWallet, toWallet);
+   await this.moneyTransactionRepository.save(createNotification.data!);
 
     return DomainResultNotification.merge(
-      createNotification,
-      withdrawnNotification,
-      addNotification,
+      createNotification
     );
   }
 }

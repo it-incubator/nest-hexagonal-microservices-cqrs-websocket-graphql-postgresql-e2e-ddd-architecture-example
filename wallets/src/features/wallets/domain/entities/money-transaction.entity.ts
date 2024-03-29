@@ -30,6 +30,15 @@ export class MoneyTransfer extends BaseDomainEntity {
 
   public static create(command: MakemoneyTransferCommand) {
     const transaction = new MoneyTransfer();
+
+    const notification = new DomainResultNotification<MoneyTransfer>();
+
+    // если больше 1000 баксов от суепрадмина - ошибка (для примера)
+    if (command.amount > 1000 && command.fromWalletId === 'idsdf34344' ) {
+      notification.addError('Imposible make transfer more then 1000 for superadmin', 'amout', 14);
+      return notification;
+    }
+
     transaction.id = randomUUID();
     transaction.fromWalletId = command.fromWalletId;
     transaction.toWalletId = command.toWalletId;

@@ -31,7 +31,7 @@ export const validateEntity = async <T extends object>(
   events: IEvent[],
 ): Promise<DomainResultNotification<T>> => {
   try {
-    await validateOrReject(entity);
+    await validateOrReject(entity);//todo: may be make sync?
   } catch (errors) {
     const resultNotification: DomainResultNotification<T> =
       mapErorsToNotification<T>(

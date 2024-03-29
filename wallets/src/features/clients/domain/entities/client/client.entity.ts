@@ -168,6 +168,8 @@ export class Client extends BaseDomainEntity {
 
   delete(wallets: Wallet[]) {
     this.clientStatusState.delete(wallets);
+    const domainResultNotification = new DomainResultNotification<Client>(this);
+    return domainResultNotification;
     /* const domainResultNotification = new DomainResultNotification<Client>(this);
 
     if (this.status === ClientStatus.Deleted) {

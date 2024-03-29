@@ -63,9 +63,10 @@ export class BaseRepository<T extends BaseDomainEntity> {
     return entities;
   }
 
-  async save(entity: T) {
+  async save(...entity: T[]) {
     await this.getRepository().save(entity);
   }
+
 
   async delete(id: string) {
     await this.getRepository().delete(id);
