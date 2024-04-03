@@ -149,16 +149,22 @@ export class Client extends BaseDomainEntity {
     switch (this.status) {
       case ClientStatus.New:
         this.clientStatusState = new ClientNewState(this);
+        return;
       case ClientStatus.OnVerification:
         this.clientStatusState = new ClientOnVerificationState(this);
+        return;
       case ClientStatus.Active:
         this.clientStatusState = new ClientActiveState(this);
+        return;
       case ClientStatus.Rejected:
         this.clientStatusState = new ClientRejectedState(this);
+        return;
       case ClientStatus.Blocked:
         this.clientStatusState = new ClientBlockedState(this);
+        return;
       case ClientStatus.Deleted:
         this.clientStatusState = new ClientDeletedState(this);
+        return;
       default:
         throw new Error(
           'ClientStatusState is not registered for this status: ' + this.status,
