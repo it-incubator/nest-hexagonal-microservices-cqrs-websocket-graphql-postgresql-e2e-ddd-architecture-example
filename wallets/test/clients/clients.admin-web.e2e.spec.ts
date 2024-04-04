@@ -114,6 +114,8 @@ describe('clients.admin-web.controller (e2e)', () => {
     });
     const { extensions } = createdClientBody;
 
+    console.log('CREATED BODY!!!', createdClientBody);
+
     expect(createdClientBody.code).toBe(2);
     expect(extensions.length).toBe(1);
   });

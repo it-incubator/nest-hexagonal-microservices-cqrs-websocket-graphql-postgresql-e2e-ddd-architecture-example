@@ -29,7 +29,7 @@ export class BaseCrudApiService<
     >(command);
 
     if (notification.hasError()) {
-      throw new BadRequestException(notification);
+      return notification;
     } else {
       const viewModel = await this.queryRepository.getById(
         notification.data!.id,

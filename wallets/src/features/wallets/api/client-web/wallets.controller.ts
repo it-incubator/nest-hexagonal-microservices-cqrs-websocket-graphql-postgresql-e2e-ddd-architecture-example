@@ -6,8 +6,8 @@ import { CreateWalletCommand } from '../../application/use-cases/create-wallet.u
 import { WalletsQueryRepository } from '../../db/wallets.query.repository';
 import { ItemCreatedResultNotification } from '../../../../modules/core/api/services/base-crud-api.service';
 import { MoneyTransactionsQueryRepository } from '../../db/money-transactions.query.repository';
-import {DomainResultNotification} from '../../../../modules/core/validation/notification'
-import {MoneyTransfer} from '../../domain/entities/money-transaction.entity'
+import { DomainResultNotification } from '../../../../modules/core/validation/notification';
+import { MoneyTransfer } from '../../domain/entities/money-transaction.entity';
 
 const baseUrl = '/wallets';
 
@@ -36,10 +36,13 @@ export class WalletsController {
 
   @Post('transaction')
   async makeTransaction(@Body() command: MakemoneyTransferCommand) {
-    const notification = await this.commandBus.execute<MakemoneyTransferCommand, DomainResultNotification<MoneyTransfer>>(command);
+    const notification = await this.commandBus.execute<
+      MakemoneyTransferCommand,
+      DomainResultNotification<MoneyTransfer>
+    >(command);
 
     if (notification.hasError()) {
-        return notification;
+      return notification;
     }
     const viewModel = this.moneyTransactionsQueryRepository.getById(
       notification.data!.id,

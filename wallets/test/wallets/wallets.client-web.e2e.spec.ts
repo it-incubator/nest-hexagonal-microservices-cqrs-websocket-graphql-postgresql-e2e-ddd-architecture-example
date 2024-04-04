@@ -39,6 +39,15 @@ describe('clients.admin-web.controller (e2e)', () => {
     await app.close();
   });
 
+  it('create client-1', async () => {
+    const client1 = await clientsHelper.updateClient(
+      'fa1f0d89-823b-4da4-960b-bf8d19c54964',
+      {},
+    );
+
+    console.log('CLIENT', client1);
+  });
+
   it('make transaction with concurrency', async () => {
     const client1 = await clientsHelper.createClient({
       firstName: 'dimych',

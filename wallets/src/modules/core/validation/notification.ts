@@ -13,21 +13,19 @@ export class ResultNotification<T = null> {
     return this.code !== 0;
   }
 
-  static createError(message: string,
-                       key: string | null = null,
-                       code: number | null = null,) {
+  static createError(
+    message: string,
+    key: string | null = null,
+    code: number | null = null,
+  ) {
     const notification = new ResultNotification();
     notification.addError(message, key, code);
     return notification;
   }
 
-  addSuccess(
-      message: string,
-      key: string | null = null,
-  ) {
+  addSuccess(message: string, key: string | null = null) {
     this.extensions.push(new NotificationExtension(message, key, 0));
   }
-
 
   addError(
     message: string,
@@ -44,17 +42,14 @@ export class ResultNotification<T = null> {
       codeForExtension = code;
     }
 
-    this.extensions.push(new NotificationExtension(message, key, codeForExtension));
+    this.extensions.push(
+      new NotificationExtension(message, key, codeForExtension),
+    );
   }
 
-  addExtension(
-      message: string,
-      key: string | null = null,
-      code: number,
-  ) {
+  addExtension(message: string, key: string | null = null, code: number) {
     this.extensions.push(new NotificationExtension(message, key, code));
   }
-
 
   setCode(code) {
     this.code = code;
@@ -66,27 +61,32 @@ export class ResultNotification<T = null> {
 }
 
 export class NotificationExtension {
-  constructor(public message: string, public key: string | null, public code: number = 1) {}
+  constructor(
+    public message: string,
+    public key: string | null,
+    public code: number = 1,
+  ) {}
 }
 
 type Nullable<T> = T | null;
 
 export class DomainResultNotification<
-  TData  = null,
+  TData = null,
 > extends ResultNotification<TData | null> {
   public events: IEvent[] = [];
   addEvents(...events: IEvent[]) {
     this.events = [...this.events, ...events];
   }
 
-  static createError(  message: string,
-                       key: string | null = null,
-                       code: number | null = null,) {
+  static createError(
+    message: string,
+    key: string | null = null,
+    code: number | null = null,
+  ) {
     const notification = new DomainResultNotification();
     notification.addError(message, key, code);
     return notification;
   }
-
 
   static merge<T>(
     mainNotification: DomainResultNotification<T>,

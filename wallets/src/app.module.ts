@@ -6,6 +6,8 @@ import { WalletsModule } from './features/wallets/wallets.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AsyncStorageMiddleware } from './config/middlewareSetup';
 import { CoreModule } from './modules/core/core.module';
+import { APP_INTERCEPTOR } from '@nestjs/core';
+import { ResponseInterceptor } from './modules/core/interseptors/response.interceptor';
 
 @Module({
   imports: [
@@ -25,7 +27,13 @@ import { CoreModule } from './modules/core/core.module';
     CoreModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: ResponseInterceptor,
+    },
+  ],
 })
 export class AppModule {
   configure(consumer: MiddlewareConsumer) {
