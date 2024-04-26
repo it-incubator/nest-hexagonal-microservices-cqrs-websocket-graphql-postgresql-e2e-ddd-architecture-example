@@ -7,8 +7,8 @@ import {
 import { IEvent } from '@nestjs/cqrs';
 
 export class DomainError extends Error {
-  constructor(message: string, public resultNotification: ResultNotification) {
-    super(message);
+  constructor(public resultNotification: ResultNotification) {
+    super(resultNotification.getFirstMessage());
   }
 }
 
@@ -22,7 +22,7 @@ export const validateEntityOrThrow = async (entity: any) => {
       ),
     );
 
-    throw new DomainError('domain entity validation error', resultNotification);
+    throw new DomainError(resultNotification);
   }
 };
 
@@ -31,7 +31,7 @@ export const validateEntity = async <T extends object>(
   events: IEvent[],
 ): Promise<DomainResultNotification<T>> => {
   try {
-    await validateOrReject(entity);//todo: may be make sync?
+    await validateOrReject(entity); //todo: may be make sync?
   } catch (errors) {
     const resultNotification: DomainResultNotification<T> =
       mapErorsToNotification<T>(

@@ -13,6 +13,10 @@ export class ResultNotification<T = null> {
     return this.code !== 0;
   }
 
+  getFirstMessage() {
+    return this.extensions[0]?.message || 'not error message';
+  }
+
   static createError(
     message: string,
     key: string | null = null,

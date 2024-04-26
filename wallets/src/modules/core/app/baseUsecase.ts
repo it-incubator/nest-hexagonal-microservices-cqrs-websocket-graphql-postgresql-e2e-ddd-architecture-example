@@ -51,6 +51,7 @@ export abstract class BaseUsecase<
         });
         await Promise.all(eventsSavingPromises);
         await queryRunner.commitTransaction();
+        
         resultNotification.events.forEach((e) =>
           this.baseUseCaseServicesWrapper.eventBus.publish(e),
         );

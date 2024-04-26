@@ -8,7 +8,10 @@ import { MoneyRemovedFromWalletBalanceEvent } from './wallet/events/moneyRemoved
 import { MoneyAddedToWalletBalanceEvent } from './wallet/events/moneyAddedToWalletBalanceEvent';
 import { CreateWalletCommand } from '../../application/use-cases/create-wallet.usecase';
 import { randomUUID } from 'crypto';
-import { validateEntity } from '../../../../modules/core/validation/validation-utils';
+import {
+  DomainError,
+  validateEntity,
+} from '../../../../modules/core/validation/validation-utils';
 import { WalletCreatedEvent } from './wallet/events/wallet-created.event';
 
 @Entity()
@@ -54,7 +57,8 @@ export class Wallet extends BaseDomainEntity {
     const notification = new DomainResultNotification();
     if (this.balance < amount) {
       notification.addError('Not enough money on balance');
-      return notification;
+      throw new DomainError(notification);
+      //return notification;
     }
     this.balance -= amount;
 
