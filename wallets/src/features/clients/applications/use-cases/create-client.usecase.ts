@@ -35,6 +35,10 @@ export class CreateClientUseCase extends BaseUsecase<
       return notification;
     }
     const domainNotification = await Client.create(dto);
+    if (domainNotification.hasError()) {
+      return domainNotification;
+    }
+
     await this.clientsRepo.save(domainNotification.data!);
 
     return domainNotification;
