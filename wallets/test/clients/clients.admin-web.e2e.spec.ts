@@ -4,7 +4,7 @@ import { getAppForE2ETesting } from '../../src/tests/tests.utils';
 import {
   CreateClientCommand,
   UpdateClientCommand,
-  validationsContsts,
+  validationsConstants,
 } from '../../src/features/clients/domain/entities/client/client.entity';
 import { ClientsHelper } from './clientsHelper';
 import { endpoints } from '../../src/features/clients/api/admin-web/clients.controller';
@@ -133,7 +133,7 @@ describe('clients.admin-web.controller (e2e)', () => {
     const updateCommand: Omit<UpdateClientCommand, 'id'> = {
       firstName: 'dimych2',
       lastName: 'kuzyuberdin2',
-      address: '-'.repeat(validationsContsts.address.minLength - 1),
+      address: '-'.repeat(validationsConstants.address.minLength - 1),
     };
     const updateBody = await clientsHelper.updateClient(
       createdClient.id,

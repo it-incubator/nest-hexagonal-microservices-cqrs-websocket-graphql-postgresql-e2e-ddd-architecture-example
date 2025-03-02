@@ -16,7 +16,7 @@ export const validateEntityOrThrow = async (entity: any) => {
   try {
     await validateOrReject(entity);
   } catch (errors) {
-    const resultNotification: ResultNotification = mapErorsToNotification(
+    const resultNotification: ResultNotification = mapErrorsToNotification(
       validationErrorsMapper.mapValidationErrorArrayToValidationPipeErrorTypeArray(
         errors,
       ),
@@ -34,7 +34,7 @@ export const validateEntity = async <T extends object>(
     await validateOrReject(entity); //todo: may be make sync?
   } catch (errors) {
     const resultNotification: DomainResultNotification<T> =
-      mapErorsToNotification<T>(
+      mapErrorsToNotification<T>(
         validationErrorsMapper.mapValidationErrorArrayToValidationPipeErrorTypeArray(
           errors,
         ),
@@ -49,7 +49,7 @@ export const validateEntity = async <T extends object>(
   return domainResultNotification;
 };
 
-export function mapErorsToNotification<T>(errors: ValidationPipeErrorType[]) {
+export function mapErrorsToNotification<T>(errors: ValidationPipeErrorType[]) {
   const resultNotification = new DomainResultNotification<T>();
   errors.forEach((item: ValidationPipeErrorType) =>
     resultNotification.addError(item.message, item.field, 1),
