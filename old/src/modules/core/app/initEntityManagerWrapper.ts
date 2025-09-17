@@ -1,4 +1,4 @@
-import { EntityManagerWrapper } from '../../../features/clients/db/entityManagerWrapper';
+import { EntityManagerWrapper } from '../../../bounded-contexts/clients/db/entityManagerWrapper';
 import { DataSource } from 'typeorm';
 
 const entityManagerProvider = () => ({

@@ -1,8 +1,8 @@
-import { CreateClientCommand } from '../../src/features/clients/domain/entities/client/client.entity';
+import { CreateClientCommand } from '../../src/bounded-contexts/clients/domain/entities/client/client.entity';
 import * as request from 'supertest';
 import { HttpStatus, INestApplication } from '@nestjs/common';
-import { endpoints } from '../../src/features/clients/api/admin-web/clients.controller';
-import { ClientViewModel } from '../../src/features/clients/db/clients.query.repository';
+import { endpoints } from '../../src/bounded-contexts/clients/api/admin-web/clients.controller';
+import { ClientViewModel } from '../../src/bounded-contexts/clients/db/clients.query.repository';
 import { ResultNotification } from '../../src/modules/core/validation/notification';
 
 export class ClientsHelper {

@@ -1,11 +1,11 @@
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
-import { endpoints } from '../../src/features/wallets/api/client-web/wallets.controller';
+import { endpoints } from '../../src/bounded-contexts/wallets/api/client-web/wallets.controller';
 import { ResultNotification } from 'src/modules/core/validation/notification';
-import { CreateWalletCommand } from '../../src/features/wallets/application/use-cases/create-wallet.usecase';
-import { MakemoneyTransferCommand } from '../../src/features/wallets/application/use-cases/make-money-transfer-use.case';
-import { ClientViewModel } from '../../src/features/clients/db/clients.query.repository';
-import { WalletViewModel } from '../../src/features/wallets/db/wallets.query.repository';
+import { CreateWalletCommand } from '../../src/bounded-contexts/wallets/application/use-cases/create-wallet.usecase';
+import { MakemoneyTransferCommand } from '../../src/bounded-contexts/wallets/application/use-cases/make-money-transfer-use.case';
+import { ClientViewModel } from '../../src/bounded-contexts/clients/db/clients.query.repository';
+import { WalletViewModel } from '../../src/bounded-contexts/wallets/db/wallets.query.repository';
 
 export class WalletsHelper {
   constructor(private app: INestApplication) {}

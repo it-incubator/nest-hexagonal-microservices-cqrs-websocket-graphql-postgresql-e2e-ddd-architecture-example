@@ -1,8 +1,8 @@
 import { MiddlewareConsumer, Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { ClientsModule } from './features/clients/clients.module';
-import { WalletsModule } from './features/wallets/wallets.module';
+import { ClientsModule } from './bounded-contexts/clients/clients.module';
+import { WalletsModule } from './bounded-contexts/wallets/wallets.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AsyncStorageMiddleware } from './config/middlewareSetup';
 import { CoreModule } from './modules/core/core.module';

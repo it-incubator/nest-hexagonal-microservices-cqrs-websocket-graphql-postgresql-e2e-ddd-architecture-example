@@ -5,10 +5,10 @@ import {
   CreateClientCommand,
   UpdateClientCommand,
   validationsContsts,
-} from '../../src/features/clients/domain/entities/client/client.entity';
+} from '../../src/bounded-contexts/clients/domain/entities/client/client.entity';
 import { ClientsHelper } from './clientsHelper';
-import { endpoints } from '../../src/features/clients/api/admin-web/clients.controller';
-import { SecurityGovApiAdapter } from '../../src/features/clients/infrastructure/security-gov-api.adapter';
+import { endpoints } from '../../src/bounded-contexts/clients/api/admin-web/clients.controller';
+import { SecurityGovApiAdapter } from '../../src/bounded-contexts/clients/infrastructure/security-gov-api.adapter';
 import { SmtpAdapter } from '../../src/modules/core/infrastructure/smtp.adapter';
 
 jest.setTimeout(10000);

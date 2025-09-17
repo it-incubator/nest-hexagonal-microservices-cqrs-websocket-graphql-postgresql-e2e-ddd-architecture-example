@@ -1,7 +1,7 @@
 import { Injectable, NestMiddleware } from '@nestjs/common';
 import { NextFunction, Request, Response } from 'express';
 import { AsyncLocalStorage } from 'node:async_hooks';
-import { EntityManagerWrapper } from '../features/clients/db/entityManagerWrapper';
+import { EntityManagerWrapper } from '../bounded-contexts/clients/db/entityManagerWrapper';
 import { DataSource } from 'typeorm';
 
 export type StoreType = { managerWrapper: EntityManagerWrapper };

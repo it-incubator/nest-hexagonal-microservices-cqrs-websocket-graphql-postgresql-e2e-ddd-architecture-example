@@ -1,7 +1,7 @@
 import { INestApplication } from '@nestjs/common';
 import { getAppForE2ETesting } from '../../src/tests/tests.utils';
 import { ClientsHelper } from '../clients/clientsHelper';
-import { SecurityGovApiAdapter } from '../../src/features/clients/infrastructure/security-gov-api.adapter';
+import { SecurityGovApiAdapter } from '../../src/bounded-contexts/clients/infrastructure/security-gov-api.adapter';
 import { WalletsHelper } from '../clients/walletsHelper';
 import { SmtpAdapter } from '../../src/modules/core/infrastructure/smtp.adapter';
 
